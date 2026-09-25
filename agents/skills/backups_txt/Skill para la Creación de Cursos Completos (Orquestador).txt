@@ -1,0 +1,72 @@
+name: crear-curso-completo
+description: Orquesta la creación de programas de formación docente integrales, coordinando y vinculando recursos multimedia, pedagógicos y tecnológicos con rigor institucional.
+
+Skill: Creación de Cursos Completos (Orquestador)
+
+Cuándo usar este skill
+
+Cuando se inicie el diseño de un nuevo programa formativo o diplomado desde cero.
+
+Para asegurar la coherencia pedagógica y de estilo entre diferentes tipos de materiales (video, PDF, apps).
+
+Cuando se necesite un mapa de ruta claro que conecte los objetivos de aprendizaje con los recursos producidos.
+
+Inputs necesarios
+
+Macro-objetivo del curso: ¿Qué competencia principal desarrollará el docente?
+
+Estructura Modular: Títulos de los módulos o unidades.
+
+Mix de Medios: Qué recursos se planea incluir (Ej. 3 videos, 1 web app, 2 PDFs).
+
+Referencia de Estilo: Consultar obligatoriamente definir-voz-estilo-edtech.
+
+Workflow
+
+Diseño Curricular: Validar que los módulos tengan una secuencia lógica y ascendente en complejidad.
+
+Asignación de Skills: Determinar qué Skill específica se activará para cada recurso:
+
+Contenido denso -> crear-pdf-docente.
+
+Procesos visuales -> crear-infografias-docentes.
+
+Interacción/Cálculo -> crear-webapps-educativas.
+
+Orquestación de Voz: Asegurar que la "experta en gestión" mantenga el mismo tono desde la bienvenida hasta la evaluación final.
+
+Integración y Cierre: Crear las conexiones entre recursos (ej. "Como viste en el video anterior, ahora descarga esta guía...").
+
+Revisión de Calidad: Verificar la adecuación cultural para España y Latinoamérica antes de finalizar.
+
+Instrucciones
+
+Enfoque Pedagógico: Priorizar el aprendizaje basado en problemas o el enfoque por competencias, común en la gestión universitaria moderna.
+
+Consistencia: No permitir que un recurso sea demasiado informal si el resto del curso es de alto nivel académico.
+
+Nivel de libertad: Media (Plantilla). Se debe seguir el esquema de módulos pero permitir flexibilidad en la elección de recursos según la temática.
+
+Output (formato exacto)
+
+Devolver un "Mapa de Ruta del Curso" que incluya:
+
+Nombre del Curso:
+
+Perfil del Egresado: Breve descripción de lo que el docente podrá hacer.
+
+Estructura por Módulos:
+
+Módulo [N°]: [Título]
+
+Objetivo:
+
+Recursos vinculados: (Lista de archivos/recursos a generar con sus respectivas Skills).
+
+Guía de Implementación: 3 consejos para el facilitador del curso.
+
+Manejo de errores
+
+Si los recursos solicitados no cubren el objetivo de aprendizaje, la skill debe sugerir: "Se recomienda añadir una [Infografía/Web App] para reforzar este concepto técnico".
+
+Si hay exceso de contenido teórico, la skill debe alertar sobre la necesidad de diversificar formatos.
