@@ -1,0 +1,422 @@
+<title>Resultados de Aprendizaje a Prueba de Revisión · Atenea</title>
+<style>
+  :root{
+    --azul:#1A365D; --oro:#D4AF37; --papiro:#F8F9FA; --coral:#E05A47;
+    --tinta:#16233C; --tinta-suave:#5A6880; --ground:#FFFFFF; --card:#F8F9FA;
+    --linea:#DCE3EC; --ok:#2F6B4F; --ok-bg:#E9F2EC; --mal-bg:#FCEDEA;
+    --sombra:0 1px 2px rgba(22,35,60,.06), 0 8px 24px rgba(22,35,60,.06);
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --azul:#8FB2E0; --oro:#E4C566; --papiro:#131E33; --coral:#F08A78;
+      --tinta:#EEF2F8; --tinta-suave:#9DAEC7; --ground:#0D1626; --card:#16233C;
+      --linea:#2A3A57; --ok:#7FC3A2; --ok-bg:#1B2E26; --mal-bg:#33211D;
+      --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); }
+  }
+  :root[data-theme="dark"]{ --azul:#8FB2E0; --oro:#E4C566; --papiro:#131E33; --coral:#F08A78;
+    --tinta:#EEF2F8; --tinta-suave:#9DAEC7; --ground:#0D1626; --card:#16233C;
+    --linea:#2A3A57; --ok:#7FC3A2; --ok-bg:#1B2E26; --mal-bg:#33211D;
+    --sombra:0 1px 2px rgba(0,0,0,.3), 0 8px 24px rgba(0,0,0,.35); }
+  :root[data-theme="light"]{ --azul:#1A365D; --oro:#D4AF37; --papiro:#F8F9FA; --coral:#E05A47;
+    --tinta:#16233C; --tinta-suave:#5A6880; --ground:#FFFFFF; --card:#F8F9FA;
+    --linea:#DCE3EC; --ok:#2F6B4F; --ok-bg:#E9F2EC; --mal-bg:#FCEDEA;
+    --sombra:0 1px 2px rgba(22,35,60,.06), 0 8px 24px rgba(22,35,60,.06); }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--tinta);
+    font:17px/1.65 Inter,"Segoe UI",system-ui,-apple-system,sans-serif;
+    -webkit-font-smoothing:antialiased}
+  .wrap{max-width:720px;margin:0 auto;padding:0 22px}
+  h1,h2,h3{font-family:Merriweather,Georgia,"Times New Roman",serif;text-wrap:balance;line-height:1.2}
+  h1{font-size:clamp(30px,5.6vw,46px);margin:0 0 18px;letter-spacing:-.01em}
+  h2{font-size:clamp(23px,3.6vw,31px);margin:0 0 16px}
+  h3{font-size:19px;margin:0 0 8px}
+  p{margin:0 0 16px}
+  section{padding:52px 0;border-top:1px solid var(--linea)}
+  section:first-of-type{border-top:none}
+  .eyebrow{text-transform:uppercase;letter-spacing:.13em;font-size:12px;font-weight:700;
+    color:var(--oro);margin:0 0 14px}
+  .lead{font-size:19.5px;color:var(--tinta-suave);margin-bottom:26px}
+  .kicker{font-size:14px;color:var(--tinta-suave);letter-spacing:.04em;
+    text-transform:uppercase;font-weight:700;margin:0 0 10px}
+  strong{color:var(--tinta)}
+
+  /* --- hero --- */
+  .hero{padding:56px 0 44px}
+  .demo{background:var(--card);border:1px solid var(--linea);border-radius:14px;
+    padding:22px;margin:26px 0 8px;box-shadow:var(--sombra)}
+  .demo .fila+.fila{margin-top:18px;padding-top:18px;border-top:1px dashed var(--linea)}
+  .tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.1em;
+    text-transform:uppercase;padding:3px 9px;border-radius:999px;margin-bottom:8px}
+  .tag.mal{background:var(--mal-bg);color:var(--coral)}
+  .tag.bien{background:var(--ok-bg);color:var(--ok)}
+  .frase{font-family:Merriweather,Georgia,serif;font-size:17.5px;line-height:1.5}
+  .tachado{text-decoration:line-through;text-decoration-color:var(--coral);
+    text-decoration-thickness:2px;color:var(--tinta-suave)}
+  .v{color:var(--azul);font-weight:700;border-bottom:2px solid var(--azul)}
+  .o{border-bottom:2px solid var(--tinta-suave)}
+  .c{background:linear-gradient(transparent 62%, color-mix(in srgb, var(--oro) 45%, transparent) 62%)}
+  .leyenda{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--tinta-suave);margin-top:14px}
+  .leyenda span{display:inline-flex;align-items:center;gap:6px}
+  .pt{width:12px;height:12px;border-radius:3px;display:inline-block}
+
+  /* --- botón --- */
+  .cta{display:block;background:var(--coral);color:#fff;text-decoration:none;
+    font-weight:700;font-size:19px;text-align:center;padding:19px 26px;border-radius:11px;
+    box-shadow:0 4px 14px color-mix(in srgb, var(--coral) 40%, transparent);
+    transition:transform .12s ease, box-shadow .12s ease}
+  .cta:hover{transform:translateY(-2px);box-shadow:0 8px 22px color-mix(in srgb, var(--coral) 45%, transparent)}
+  .cta:focus-visible{outline:3px solid var(--azul);outline-offset:3px}
+  .cta small{display:block;font-weight:500;font-size:13.5px;opacity:.93;margin-top:5px}
+  @media (prefers-reduced-motion:reduce){.cta{transition:none}.cta:hover{transform:none}}
+  .bajo-cta{text-align:center;font-size:13.5px;color:var(--tinta-suave);margin-top:12px}
+
+  /* --- bloques --- */
+  .caja{background:var(--card);border-left:4px solid var(--oro);border-radius:0 11px 11px 0;
+    padding:18px 20px;margin:22px 0}
+  .caja.alerta{border-left-color:var(--coral)}
+  .caja p:last-child{margin-bottom:0}
+  ul.bene{list-style:none;padding:0;margin:0;display:grid;gap:13px}
+  ul.bene li{padding-left:32px;position:relative}
+  ul.bene li::before{content:"";position:absolute;left:0;top:.42em;width:15px;height:9px;
+    border-left:3px solid var(--ok);border-bottom:3px solid var(--ok);
+    transform:rotate(-45deg)}
+  .grid{display:grid;gap:14px;margin:22px 0}
+  @media(min-width:620px){.grid.dos{grid-template-columns:1fr 1fr}}
+  .pieza{background:var(--card);border:1px solid var(--linea);border-radius:11px;padding:16px 18px}
+  .pieza .n{font-family:Merriweather,Georgia,serif;font-size:13px;color:var(--oro);font-weight:700}
+  .pieza p{font-size:15px;color:var(--tinta-suave);margin:4px 0 0}
+  .precio{text-align:center;margin:8px 0 22px}
+  .precio .antes{font-size:20px;color:var(--tinta-suave);text-decoration:line-through}
+  .precio .ahora{font-family:Merriweather,Georgia,serif;font-size:clamp(42px,9vw,60px);
+    font-weight:700;color:var(--azul);display:block;line-height:1.05;margin:2px 0}
+  .precio .nota{font-size:14px;color:var(--tinta-suave)}
+  details{border:1px solid var(--linea);border-radius:10px;padding:14px 16px;margin-bottom:10px;
+    background:var(--card)}
+  details summary{cursor:pointer;font-weight:700;font-size:16px}
+  details summary:focus-visible{outline:2px solid var(--azul);outline-offset:3px}
+  details p{margin:11px 0 0;font-size:15.5px;color:var(--tinta-suave)}
+  .tabla-envoltura{overflow-x:auto;margin:20px 0}
+  table{border-collapse:collapse;width:100%;font-size:15px;min-width:420px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--linea)}
+  th{background:var(--azul);color:var(--th-tinta,#fff);font-size:13px;
+    text-transform:uppercase;letter-spacing:.05em}
+  .pie{font-size:13px;color:var(--tinta-suave);line-height:1.6;padding:34px 0 60px;
+    border-top:1px solid var(--linea)}
+  .pendiente{border:2px dashed var(--coral);border-radius:11px;padding:18px 20px;margin:22px 0;
+    background:var(--mal-bg)}
+  .pendiente h3{color:var(--coral);margin-bottom:6px}
+  .pendiente p{font-size:15px;margin-bottom:0}
+</style>
+
+<div class="wrap">
+
+<!-- ══════ 1 · TITULAR + DOLOR ══════ -->
+<section class="hero">
+  <p class="eyebrow">Para docentes y coordinadores de media superior y superior en México</p>
+  <h1>Le pidieron los resultados de aprendizaje de su materia. Y se los van a revisar.</h1>
+  <p class="lead">Nadie le explicó qué esperan exactamente. Este kit se lo deja resuelto en una
+  tarde — con el texto oficial del Diario Oficial de la Federación citado, no interpretado.</p>
+
+  <div class="demo">
+    <div class="fila">
+      <span class="tag mal">Así llega casi siempre</span>
+      <p class="frase tachado" style="margin:0">El alumno comprenderá los principios de la
+      administración financiera.</p>
+    </div>
+    <div class="fila">
+      <span class="tag bien">Así resiste una revisión</span>
+      <p class="frase" style="margin:0"><span class="v">Interpreta</span>
+      <span class="o">la situación financiera de una empresa</span>
+      <span class="c">a partir de sus estados financieros y emite una recomendación de inversión
+      sustentada en razones financieras.</span></p>
+    </div>
+    <div class="leyenda">
+      <span><i class="pt" style="background:var(--azul)"></i> Verbo observable</span>
+      <span><i class="pt" style="background:var(--tinta-suave)"></i> Objeto</span>
+      <span><i class="pt" style="background:var(--oro)"></i> Contexto — el que decide el nivel</span>
+    </div>
+  </div>
+  <p style="font-size:15px;color:var(--tinta-suave)">Ese cambio es todo el trabajo. El kit le enseña
+  a hacerlo con los suyos, en veinte minutos por resultado.</p>
+</section>
+
+<!-- ══════ 2 · LA HISTORIA / EL PROBLEMA ══════ -->
+<section>
+  <p class="kicker">Lo que de verdad está pasando</p>
+  <h2>El problema no es que usted no sepa enseñar. Es que le cambiaron la regla y no le avisaron.</h2>
+
+  <p>El <strong>1 de marzo de 2024</strong> se publicó en el Diario Oficial de la Federación el
+  Acuerdo 01/02/24, que estableció el <strong>Marco Nacional de Cualificaciones</strong>. Ordenó todo
+  el Sistema Educativo Nacional en nueve niveles, y fijó una unidad de medida común:
+  <strong>el resultado de aprendizaje</strong>.</p>
+
+  <p>A usted esa noticia no le llegó por el Diario Oficial. Le llegó como le llegan todas: de un día
+  para otro, en una reunión de academia, con fecha de entrega. «Hay que actualizar los programas.
+  Ahora van con resultados de aprendizaje.»</p>
+
+  <p>Entonces empieza lo conocido. Busca en internet y encuentra veinte formatos distintos. Pregunta
+  a un colega y le dice que también está averiguando. Copia el de otra materia y lo adapta.
+  Y el domingo en la noche, en vez de descansar, está escribiendo «el alumno comprenderá…»
+  con la sospecha de que eso no era.</p>
+
+  <p><strong>Tenía razón en sospechar.</strong> Ese enunciado no pasa. Y lo peor es que tampoco pasan
+  los que están bien escritos, si no corresponden al nivel de su programa. Es la observación más
+  común en revisión, y casi nadie la ve venir.</p>
+
+  <div class="caja alerta">
+    <p><strong>Lo que cuesta no resolverlo:</strong> otro fin de semana perdido, un programa devuelto
+    con observaciones que no entiende, y en una visita de evaluación, una recomendación sobre su
+    programa que su coordinación tendrá que responder por escrito.</p>
+  </div>
+</section>
+
+<!-- ══════ 3 · LA SOLUCIÓN ══════ -->
+<section>
+  <p class="kicker">La solución</p>
+  <h2>Resultados de Aprendizaje a Prueba de Revisión</h2>
+
+  <p>Un kit descargable que hace <strong>una sola cosa, completa</strong>: deja los resultados de
+  aprendizaje que usted ya tiene escritos redactados, calibrados a su nivel y listos para entregar.</p>
+
+  <p>No es un curso de teoría curricular. No es un generador de inteligencia artificial que le
+  escupe un texto que usted no puede defender. Son <strong>instrumentos para trabajar sobre lo suyo</strong>:
+  una lista de cotejo, un banco de verbos, una plantilla de reescritura, ejemplos por área y una
+  cápsula para practicar.</p>
+
+  <p>Todo <strong>editable, imprimible y utilizable sin internet</strong>. Sin curva técnica, sin
+  plataformas, sin contraseñas que recordar.</p>
+
+  <a class="cta" href="#comprar">Quiero resolverlo esta semana
+    <small>Acceso inmediato · $199 MXN, pago único</small></a>
+  <p class="bajo-cta">Garantía de 7 días. Si no le sirve, se lo devolvemos.</p>
+</section>
+
+<!-- ══════ 4 · LA PRUEBA ══════ -->
+<section>
+  <p class="kicker">Por qué puede creerle a este material</p>
+  <h2>Todo lo que afirmamos sobre la norma está citado del texto oficial. Usted puede comprobarlo.</h2>
+
+  <p>La mayoría del material que circula sobre el Marco Nacional de Cualificaciones es
+  <em>interpretación</em>: alguien leyó algo y lo resumió. Este kit hace lo contrario. Cada
+  afirmación normativa va con su cita textual y su ubicación exacta en el Acuerdo, para que usted
+  —o quien lo revise— pueda ir al Diario Oficial y verificarla.</p>
+
+  <div class="caja">
+    <p style="font-family:Merriweather,Georgia,serif;font-size:17px">«Resultado de aprendizaje,
+    expresión de lo que una persona sabe, comprende y es capaz de hacer al culminar un proceso
+    formativo.»</p>
+    <p style="font-size:14px;color:var(--tinta-suave);margin-top:10px">— Acuerdo 01/02/24,
+    Lineamiento Segundo, fracción XXXVI. Diario Oficial de la Federación, 1 de marzo de 2024.
+    <strong>Compruébelo en dof.gob.mx.</strong></p>
+  </div>
+
+  <p>Esas veinte palabras son las que le van a revisar. El kit las desarma en las cuatro exigencias
+  concretas que contienen, y le da el instrumento para cumplirlas una por una.</p>
+
+  <h3 style="margin-top:30px">Y hay algo que casi nadie le va a advertir</h3>
+  <p>El Marco describe cada nivel en <strong>cuatro dimensiones</strong>: conocimientos, destrezas,
+  actitudes y valores, y responsabilidad y autonomía. Usted puede tener cinco resultados
+  impecablemente redactados y <strong>aun así estar acreditando un nivel más bajo</strong>, si entre
+  todos solo hablan de lo que el estudiante sabe y hace.</p>
+  <p>Eso no se ve revisando uno por uno. Solo aparece mirándolos juntos. El kit trae la matriz que
+  lo detecta en diez minutos — y la forma de corregirlo <strong>agregando contexto, sin inventar
+  resultados nuevos</strong>.</p>
+
+  <div class="pendiente">
+    <h3>⚠ BLOQUE PENDIENTE — testimonios</h3>
+    <p><strong>No publicar la página sin resolver esto.</strong> Aquí van 2 o 3 testimonios reales de
+    docentes mexicanos que hayan usado el kit, con nombre, nivel e institución, y
+    <strong>con su permiso explícito por escrito</strong>. Hoy no existen: los lectores beta apenas
+    lo están revisando. Inventarlos o parafrasearlos no es una opción.</p>
+  </div>
+
+  <p style="font-size:15px;color:var(--tinta-suave)">Mientras tanto, lo verificable: Atenea Grupo
+  Educativo nace del trabajo de Analítica Académica, con más de 600 docentes formados y más de 500
+  compradores en América Latina. <em>(Mónica: confirma estas dos cifras antes de publicar.)</em></p>
+</section>
+
+<!-- ══════ 5 · BENEFICIOS ══════ -->
+<section>
+  <p class="kicker">Lo que va a poder hacer</p>
+  <h2>Al terminar el kit, esta tarde</h2>
+
+  <ul class="bene">
+    <li><strong>Sabrá exactamente qué le van a revisar</strong> — las seis preguntas que aparecen en
+      toda revisión, sea de su coordinación, de RVOE o de acreditación.</li>
+    <li><strong>Detectará en treinta segundos</strong> cuáles de sus resultados no pasan, con una
+      lista de cotejo de doce puntos que se llena en dos minutos por resultado.</li>
+    <li><strong>Reescribirá los que fallan</strong> con una plantilla de siete pasos, sin depender de
+      que alguien le corrija.</li>
+    <li><strong>Ubicará su programa en el nivel correcto</strong> del Marco — y sabrá si sus
+      resultados están por debajo, en nivel o por encima.</li>
+    <li><strong>Descubrirá si su programa evidencia las cuatro dimensiones</strong>, que es la
+      observación que nadie anticipa.</li>
+    <li><strong>Dejará de usar los cinco verbos</strong> que arruinan más programas que cualquier
+      otro error — y sabrá por cuáles cambiarlos.</li>
+    <li><strong>Podrá auditar el resto de su programa solo</strong>, con un prompt de inteligencia
+      artificial listo para pegar.</li>
+    <li><strong>Recuperará su fin de semana.</strong> Eso primero.</li>
+  </ul>
+</section>
+
+<!-- ══════ 6 · QUÉ RECIBE ══════ -->
+<section>
+  <p class="kicker">Qué recibe exactamente</p>
+  <h2>Ocho piezas. Se consume en 90 minutos.</h2>
+
+  <div class="grid dos">
+    <div class="pieza"><span class="n">01</span><h3>Guía del Marco Nacional de Cualificaciones</h3>
+      <p>Qué cambió, por qué le llega a usted, y lo que el Marco <em>no</em> exige — que le ahorra
+      discusiones.</p></div>
+    <div class="pieza"><span class="n">02</span><h3>Los nueve niveles</h3>
+      <p>Cada nivel con su texto oficial, más la escalera completa en una infografía para ubicar su
+      programa.</p></div>
+    <div class="pieza"><span class="n">03</span><h3>Lista de cotejo</h3>
+      <p>Doce puntos. Dos minutos por resultado. Imprimible.</p></div>
+    <div class="pieza"><span class="n">04</span><h3>Banco de verbos</h3>
+      <p>La lista negra y por cuál cambiar cada uno, calibrados por nivel.</p></div>
+    <div class="pieza"><span class="n">05</span><h3>Plantilla de reescritura</h3>
+      <p>Siete pasos, editable en Word. Más la matriz de las cuatro dimensiones. <strong>Es la pieza
+      clave.</strong></p></div>
+    <div class="pieza"><span class="n">06</span><h3>Veinte ejemplos antes y después</h3>
+      <p>Salud, ingeniería, económico-administrativas, sociales y derecho, humanidades y exactas.</p></div>
+    <div class="pieza"><span class="n">07</span><h3>Prompt de auditoría con IA</h3>
+      <p>Para revisar el resto de su programa por su cuenta. Funciona en cualquier asistente.</p></div>
+    <div class="pieza"><span class="n">08</span><h3>Cápsula interactiva</h3>
+      <p>Seis minutos en el navegador para entrenar el ojo antes de tocar lo suyo.</p></div>
+  </div>
+
+  <div class="caja">
+    <p><strong>Alcance, dicho por delante:</strong> este kit es para <strong>media superior, superior
+    y posgrado</strong>. Si usted da clase en primaria o secundaria, su instrumento de planeación no
+    es el resultado de aprendizaje sino el PDA del Programa Sintético — y este material no lo
+    sustituye. Preferimos decírselo aquí que cobrarle y decepcionarlo.</p>
+  </div>
+</section>
+
+<!-- ══════ 7 · PRECIO Y COMPRA ══════ -->
+<section id="comprar">
+  <p class="kicker">Cuánto cuesta</p>
+  <h2>$199 pesos. Pago único.</h2>
+
+  <div class="precio">
+    <span class="antes">$499 MXN</span>
+    <span class="ahora">$199</span>
+    <span class="nota">pesos mexicanos · pago único · sin suscripción</span>
+  </div>
+
+  <p>Menos de lo que cuesta una comida fuera. Una suscripción a un generador de planeaciones cuesta
+  más que eso <em>cada mes</em>, y le entrega texto que usted no puede sustentar con una cita.</p>
+
+  <a class="cta" href="#" data-hotmart>Comprar ahora — acceso inmediato
+    <small>Tarjeta, OXXO, transferencia SPEI o PayPal</small></a>
+  <p class="bajo-cta">Pago seguro procesado por Hotmart · Descarga inmediata tras la compra</p>
+
+  <div class="caja" style="margin-top:28px">
+    <p><strong>En el momento de pagar</strong> podrá agregar, si le sirven, dos complementos:
+    el <strong>Banco de 100 resultados de aprendizaje modelo</strong> por área y nivel
+    (<strong>$149</strong>), y el <strong>Kit del coordinador</strong> para revisar los programas de
+    un plan completo en una tarde (<strong>$249</strong>). Ninguno es necesario para que el kit
+    funcione.</p>
+  </div>
+</section>
+
+<!-- ══════ 8 · GARANTÍA ══════ -->
+<section>
+  <p class="kicker">Su riesgo</p>
+  <h2>Ninguno. Siete días para decidir.</h2>
+  <p>Descárguelo, léalo completo, pase un resultado suyo por la plantilla. Si en siete días le parece
+  que no le sirvió, escriba y le devolvemos su dinero. <strong>Sin preguntas y sin que tenga que
+  explicar nada.</strong></p>
+  <p>Lo decimos con tranquilidad porque el material está verificado contra el documento oficial. No
+  necesitamos retenerlo a la fuerza.</p>
+</section>
+
+<!-- ══════ 9 · URGENCIA ══════ -->
+<section>
+  <p class="kicker">Si lo deja para después</p>
+  <h2>El problema no se va solo. Vuelve con fecha.</h2>
+  <p>Los programas se piden en momentos fijos: al cierre del semestre, antes de una visita de
+  evaluación, cuando se actualiza el plan de estudios. Cada una de esas fechas lo va a encontrar en
+  el mismo punto — buscando formatos en internet un domingo por la noche.</p>
+  <p>Y si en el intervalo llega una revisión, la observación no queda en su programa: sube a la
+  coordinación, y alguien tiene que responderla por escrito.</p>
+  <p><strong>Doscientos pesos y una tarde lo cierran de una vez.</strong> Lo que aprenda le sirve
+  para todas las materias que dé, este semestre y los que siguen.</p>
+  <a class="cta" href="#comprar">Cerrarlo esta semana por $199
+    <small>Acceso inmediato · garantía de 7 días</small></a>
+</section>
+
+<!-- ══════ 10 · PREGUNTAS ══════ -->
+<section>
+  <p class="kicker">Antes de que lo pregunte</p>
+  <h2>Dudas frecuentes</h2>
+
+  <details><summary>¿Esto tiene aval de la SEP?</summary>
+    <p><strong>No, y desconfíe de quien diga que sí.</strong> Este es un material independiente de
+    Atenea Grupo Educativo. Lo que sí hacemos es citar textualmente el Acuerdo publicado en el Diario
+    Oficial de la Federación el 1 de marzo de 2024, indicando la ubicación exacta de cada cita para
+    que usted pueda verificarla en la fuente.</p></details>
+
+  <details><summary>Doy clase en primaria o secundaria. ¿Me sirve?</summary>
+    <p>Le sirve para entender el Marco, pero <strong>su instrumento de planeación es otro</strong>:
+    los Procesos de Desarrollo de Aprendizaje del Programa Sintético. Este kit no los sustituye. Si
+    ese es su caso, le sugerimos no comprarlo.</p></details>
+
+  <details><summary>¿Necesito saber de tecnología?</summary>
+    <p>No. Son documentos de Word y PDF que se abren en cualquier computadora o celular. La cápsula
+    interactiva se abre en el navegador con un clic. Todo lo demás funciona impreso y sin internet.</p></details>
+
+  <details><summary>¿Cuánto tiempo me va a tomar?</summary>
+    <p>Leer el kit completo: unos 90 minutos. Corregir un resultado de aprendizaje: entre 10 y 15
+    minutos la primera vez, 5 después. Una asignatura completa con sus cuatro a ocho resultados: una
+    tarde.</p></details>
+
+  <details><summary>¿Me escribe los resultados de aprendizaje por mí?</summary>
+    <p>No, y es deliberado. Un resultado que usted no decidió no lo va a poder defender ante una
+    revisión. El kit le da el criterio, los instrumentos y los modelos; la decisión pedagógica
+    es suya.</p></details>
+
+  <details><summary>¿Sirve para alinear mis actividades y mi evaluación?</summary>
+    <p>Ahí este kit se detiene, y preferimos decirlo. Deja sus resultados listos para entregar y
+    para resistir la revisión. Que además gobiernen lo que pasa en su clase —el alineamiento
+    constructivo— es un trabajo de rediseño distinto, y no cabe aquí.</p></details>
+
+  <details><summary>¿Cómo lo recibo?</summary>
+    <p>Al confirmarse el pago recibe un correo con el acceso de descarga. Es inmediato y los archivos
+    quedan en su equipo: no dependen de que ninguna plataforma siga funcionando.</p></details>
+</section>
+
+<!-- ══════ 11 · CONTACTO ══════ -->
+<section>
+  <p class="kicker">Si le queda una duda</p>
+  <h2>Pregunte antes de comprar</h2>
+  <p>Preferimos resolverle la duda a venderle algo que no le sirva.</p>
+  <div class="pendiente">
+    <h3>⚠ PENDIENTE — datos de contacto</h3>
+    <p>Falta el correo de soporte y el WhatsApp que se van a publicar aquí. Deben ser canales
+    atendidos de verdad: publicar un contacto que nadie responde hace más daño que no ponerlo.</p>
+  </div>
+</section>
+
+<!-- ══════ 12 · CIERRE ══════ -->
+<section>
+  <h2>Qué hacer ahora</h2>
+  <p>Toque el botón, complete el pago y descargue el kit. Abra el documento 01, luego el 05, y pase
+  por la plantilla un resultado de aprendizaje que ya tenga escrito. En quince minutos va a saber si
+  el suyo pasaba o no.</p>
+  <a class="cta" href="#" data-hotmart>Descargar el kit por $199 MXN
+    <small>Acceso inmediato · garantía de 7 días · pago único</small></a>
+  <p class="bajo-cta">Si en siete días no le sirvió, le devolvemos su dinero.</p>
+</section>
+
+<p class="pie">
+  <strong>Atenea Grupo Educativo.</strong> Menos desgaste administrativo. Más tiempo para enseñar.<br><br>
+  Este material es una obra independiente de Atenea Grupo Educativo. <strong>No cuenta con aval,
+  respaldo, vínculo ni patrocinio de la Secretaría de Educación Pública</strong> ni de ninguna otra
+  autoridad educativa u organismo evaluador. Los contenidos normativos que cita fueron verificados
+  contra el texto oficial del Acuerdo número 01/02/24, publicado en el Diario Oficial de la
+  Federación el 1 de marzo de 2024, documento público consultable en dof.gob.mx.
+</p>
+
+</div>

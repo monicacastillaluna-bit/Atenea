@@ -1,0 +1,179 @@
+<title>Cazador de verbos prohibidos · Atenea</title>
+<style>
+  :root {
+    --tiza:#FFFFFF;--tinta:#1A365D;--tinta-suave:#5A5A5A;--verde:#2F6B4F;
+    --amarillo:#D4AF37;--amarillo-suave:#F5E7BC;--rojo:#E05A47;--ground:#F8F9FA;
+    --card:#FFFFFF;--linea:#DCE3EC;--ok-bg:#E7F0E9;--bad-bg:#FBEAE6;
+  }
+  @media (prefers-color-scheme: dark){:root{--ground:#0F1B2E;--card:#1A2942;--tinta:#F8F9FA;--tinta-suave:#A8B4C4;--linea:#2C3E5C;--verde:#6FAE8F;--amarillo:#E4C566;--amarillo-suave:#3A3722;--rojo:#F08A78;--ok-bg:#24382C;--bad-bg:#3D2A22;--tiza:#1A2942;}}
+  :root[data-theme="dark"]{--ground:#0F1B2E;--card:#1A2942;--tinta:#F8F9FA;--tinta-suave:#A8B4C4;--linea:#2C3E5C;--verde:#6FAE8F;--amarillo:#E4C566;--amarillo-suave:#3A3722;--rojo:#F08A78;--ok-bg:#24382C;--bad-bg:#3D2A22;--tiza:#1A2942;}
+  :root[data-theme="light"]{--tiza:#FFFFFF;--tinta:#1A365D;--tinta-suave:#5A5A5A;--verde:#2F6B4F;--amarillo:#D4AF37;--amarillo-suave:#F5E7BC;--rojo:#E05A47;--ground:#F8F9FA;--card:#FFFFFF;--linea:#DCE3EC;--ok-bg:#E7F0E9;--bad-bg:#FBEAE6;}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--tinta);font:17px/1.6 "Segoe UI",system-ui,-apple-system,sans-serif}
+  .wrap{max-width:740px;margin:0 auto;padding:24px 20px 80px}
+  .eyebrow{text-transform:uppercase;letter-spacing:.14em;font-size:12px;color:var(--verde);font-weight:600;margin:0 0 6px}
+  h1{font-family:Charter,"Bitstream Charter",Georgia,serif;font-size:clamp(26px,5vw,36px);line-height:1.15;margin:0 0 10px;text-wrap:balance}
+  h2{font-family:Charter,Georgia,serif;font-size:24px;margin:0 0 8px;text-wrap:balance}
+  .lead{color:var(--tinta-suave);margin:0 0 24px;max-width:60ch}
+  .paso{display:flex;align-items:baseline;gap:10px;margin:40px 0 10px}
+  .paso .n{font-family:Charter,Georgia,serif;font-size:15px;color:var(--amarillo);border:1.5px solid var(--amarillo);border-radius:50%;width:28px;height:28px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+  .tarjetas{display:grid;gap:12px;margin:16px 0}
+  @media (min-width:640px){.tarjetas{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}}
+  .tarjeta{background:var(--card);border:1.5px solid var(--linea);border-radius:10px;padding:16px 16px 14px}
+  .tarjeta h3{margin:0 0 6px;font-size:16px}
+  .tarjeta p{margin:0;font-size:14.5px;color:var(--tinta-suave)}
+  .tarjeta .clave{display:inline-block;font-size:12px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px;padding:2px 8px;border-radius:20px}
+  .c1 .clave{background:var(--amarillo-suave);color:var(--tinta)}
+  .c2 .clave{background:var(--linea);color:var(--tinta)}
+  .c3 .clave{background:var(--ok-bg);color:var(--verde)}
+  .juego{background:var(--card);border:1.5px solid var(--linea);border-radius:12px;padding:22px;margin-top:14px}
+  .progreso{display:flex;gap:5px;margin-bottom:18px}
+  .progreso i{height:5px;flex:1;border-radius:3px;background:var(--linea)}
+  .progreso i.hecho-ok{background:var(--verde)}
+  .progreso i.hecho-mal{background:var(--rojo)}
+  .progreso i.actual{background:var(--amarillo)}
+  .enunciado{font-family:Charter,Georgia,serif;font-size:20px;line-height:1.4;margin:4px 0 20px;min-height:3.2em;text-wrap:balance}
+  .enunciado::before{content:"“";color:var(--amarillo)}
+  .enunciado::after{content:"”";color:var(--amarillo)}
+  .opciones{display:grid;gap:9px}
+  @media (min-width:560px){.opciones{grid-template-columns:1fr 1fr}}
+  .opciones button{font:600 14.5px/1.3 "Segoe UI",system-ui,sans-serif;padding:12px 14px;border-radius:9px;border:1.5px solid var(--linea);background:var(--ground);color:var(--tinta);cursor:pointer;text-align:left;transition:border-color .15s}
+  .opciones button:hover:not(:disabled){border-color:var(--verde)}
+  .opciones button:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+  .opciones button:disabled{cursor:default;opacity:.55}
+  .opciones button.elegida-ok{background:var(--ok-bg);border-color:var(--verde);opacity:1}
+  .opciones button.elegida-mal{background:var(--bad-bg);border-color:var(--rojo);opacity:1}
+  .opciones button.correcta-era{border-color:var(--verde);border-style:dashed;opacity:1}
+  .feedback{margin-top:16px;padding:14px 16px;border-radius:9px;font-size:15px;display:none;border-left:4px solid var(--verde);background:var(--ok-bg)}
+  .feedback.mal{border-left-color:var(--rojo);background:var(--bad-bg)}
+  .feedback strong{display:block;margin-bottom:4px}
+  .siguiente{margin-top:16px;display:none}
+  .btn{font:600 15px "Segoe UI",system-ui,sans-serif;padding:11px 22px;border-radius:9px;border:none;background:var(--verde);color:#fff;cursor:pointer}
+  :root[data-theme="dark"] .btn{color:#10201A}
+  .btn:focus-visible{outline:3px solid var(--amarillo);outline-offset:2px}
+  .resultado{display:none;text-align:center;padding:10px 0 4px}
+  .resultado .marcador{font-family:Charter,Georgia,serif;font-size:52px;color:var(--verde)}
+  .resultado p{max-width:52ch;margin:10px auto}
+  .cierre{background:var(--tiza);border:1.5px solid var(--linea);border-radius:12px;padding:20px 22px;margin-top:16px}
+  .cierre ol{margin:10px 0 0;padding-left:22px}
+  .cierre li{margin-bottom:8px}
+  .pie{margin-top:46px;font-size:13px;color:var(--tinta-suave);border-top:1px solid var(--linea);padding-top:14px}
+  textarea{width:100%;min-height:110px;border:1.5px solid var(--linea);border-radius:9px;background:var(--card);color:var(--tinta);font:15px/1.5 "Segoe UI",system-ui,sans-serif;padding:12px}
+  @media (prefers-reduced-motion: reduce){*{transition:none!important}}
+</style>
+<div class="wrap">
+  <p class="eyebrow">Resultados de Aprendizaje a Prueba de Revisión · Atenea Grupo Educativo</p>
+  <h1>Cazador de verbos: observables vs. lista negra</h1>
+  <p class="lead">Cinco verbos arruinan más programas que cualquier otro error: conocer, comprender, saber, apreciar, interiorizar. Aquí entrena el reflejo de detectarlos y sustituirlos. Tiempo estimado: 6 minutos.</p>
+
+  <div class="paso"><span class="n">1</span><h2>Aprenda la idea clave</h2></div>
+  <div class="tarjetas">
+    <div class="tarjeta c1">
+      <span class="clave">Lista negra</span>
+      <h3>Procesos internos</h3>
+      <p><em>Conocer, comprender, saber, apreciar, interiorizar</em>: ocurren dentro de la mente. Nadie puede verlos ni medirlos directamente.</p>
+    </div>
+    <div class="tarjeta c2">
+      <span class="clave">La prueba</span>
+      <h3>¿Puedo verlo?</h3>
+      <p>Pregúntese: ¿qué haría el estudiante para demostrarlo? Si la respuesta es otra acción (explicar, resolver…), use ESE verbo.</p>
+    </div>
+    <div class="tarjeta c3">
+      <span class="clave">Observables</span>
+      <h3>Acciones con evidencia</h3>
+      <p><em>Define, explica, aplica, analiza, evalúa, diseña…</em> — cada uno deja una huella evaluable: un texto, una solución, un producto, una actuación.</p>
+    </div>
+  </div>
+
+  <div class="paso"><span class="n">2</span><h2>Póngalo a prueba</h2></div>
+  <div class="juego">
+    <div class="progreso" id="progreso" aria-hidden="true"></div>
+    <div id="zona-juego">
+      <p style="margin:0;font-size:13px;color:var(--tinta-suave);text-transform:uppercase;letter-spacing:.08em;">Enunciado <span id="num">1</span> de 10 — ¿el verbo de este enunciado es…?</p>
+      <p class="enunciado" id="enunciado"></p>
+      <div class="opciones" id="opciones" role="group" aria-label="Opciones">
+        <button data-op="ok">✅ Observable: el RA funciona</button>
+        <button data-op="neg">🚫 De lista negra: hay que sustituirlo</button>
+      </div>
+      <div class="feedback" id="feedback" role="status"></div>
+      <div class="siguiente" id="cont-siguiente"><button class="btn" id="siguiente">Siguiente →</button></div>
+    </div>
+    <div class="resultado" id="resultado">
+      <div class="marcador"><span id="puntos">0</span>/10</div>
+      <p id="mensaje-final"></p>
+      <button class="btn" id="reiniciar">Intentar de nuevo</button>
+    </div>
+  </div>
+
+  <div class="paso"><span class="n">3</span><h2>Aplíquelo a su asignatura</h2></div>
+  <div class="cierre">
+    <p style="margin:0;">Vaya de cacería a su propio programa:</p>
+    <ol>
+      <li>Busque en su programa un verbo de la <strong>lista negra</strong> (conocer, comprender, saber, apreciar, interiorizar).</li>
+      <li>Aplíquele la prueba: ¿qué haría el estudiante para demostrarlo?</li>
+      <li>Escriba el reemplazo observable. La <strong>tabla de lista negra con reemplazos</strong> (material 2.2) le da alternativas por cada verbo.</li>
+    </ol>
+  </div>
+  
+  <p class="pie">Atenea Grupo Educativo · Regla de oro: si no puede imaginar la evidencia, el verbo no sirve.</p>
+</div>
+<script>
+const ITEMS = [{"t":"Comprende los fundamentos del Diseño Universal para el Aprendizaje","r":"neg","e":"'Comprende' es interno. ¿Cómo lo demostraría? Quizá: 'Explica los fundamentos del DUA con ejemplos de su aula' — ese sería el RA."},{"t":"Clasifica las barreras de aprendizaje de su aula según los tres principios del DUA","r":"ok","e":"'Clasifica' deja evidencia directa: la clasificación hecha. Observable y evaluable."},{"t":"Conoce las etapas del desarrollo cognitivo infantil","r":"neg","e":"'Conoce' no dice qué hará el estudiante. Sustitutos según la exigencia: 'describe', 'compara' o 'aplica al diagnóstico de un caso'."},{"t":"Valora la importancia de la lectura en la primera infancia","r":"neg","e":"'Valorar la importancia' es actitud difusa. Observable sería: 'Justifica, con evidencia de investigación, el lugar de la lectura en su planeación semanal'."},{"t":"Argumenta la pertinencia de una estrategia didáctica ante un comité académico simulado","r":"ok","e":"'Argumenta' con audiencia definida: la evidencia es la argumentación misma. Además el contexto es auténtico."},{"t":"Sabe utilizar herramientas digitales para la enseñanza","r":"neg","e":"'Sabe utilizar' esconde el desempeño. Directo y observable: 'Utiliza herramientas digitales para diseñar una actividad de práctica autónoma'."},{"t":"Diseña una rúbrica analítica para evaluar textos argumentativos de secundaria","r":"ok","e":"'Diseña' produce un artefacto evaluable: la rúbrica. Verbo de creación, nivel alto de Bloom."},{"t":"Interioriza los valores de la convivencia democrática en la escuela","r":"neg","e":"'Interioriza' es inverificable por definición. Observable: 'Propone acuerdos de convivencia fundamentados en principios democráticos para su grupo'."},{"t":"Resuelve conflictos de convivencia escolar aplicando protocolos de mediación","r":"ok","e":"'Resuelve' se demuestra actuando — en simulación o caso real. La evidencia es el desempeño mismo."},{"t":"Aprecia la diversidad cultural presente en las aulas latinoamericanas","r":"neg","e":"'Aprecia' no tiene evidencia definida. Alternativa: 'Incorpora referentes culturales de sus estudiantes en el diseño de una secuencia didáctica'."}];
+const NOMBRES = {"ok":"un verbo observable","neg":"un verbo de lista negra"};
+const MSJ = null;
+let i = 0, puntos = 0;
+const $ = id => document.getElementById(id);
+const prog = $("progreso");
+ITEMS.forEach(() => prog.appendChild(document.createElement("i")));
+function pinta(){
+  $("num").textContent = i+1;
+  $("enunciado").textContent = ITEMS[i].t;
+  $("feedback").style.display = "none";
+  $("cont-siguiente").style.display = "none";
+  document.querySelectorAll("#opciones button").forEach(b => { b.disabled = false; b.className = ""; });
+  [...prog.children].forEach((el,j) => { el.className = j===i ? "actual" : el.className.replace("actual",""); });
+}
+document.querySelectorAll("#opciones button").forEach(b => {
+  b.addEventListener("click", () => {
+    const ok = b.dataset.op === ITEMS[i].r;
+    if (ok) puntos++;
+    document.querySelectorAll("#opciones button").forEach(x => {
+      x.disabled = true;
+      if (x === b) x.classList.add(ok ? "elegida-ok" : "elegida-mal");
+      if (!ok && x.dataset.op === ITEMS[i].r) x.classList.add("correcta-era");
+    });
+    const f = $("feedback");
+    f.className = "feedback" + (ok ? "" : " mal");
+    f.innerHTML = "<strong>" + (ok ? "✔ Correcto: " : "✘ Era: ") + NOMBRES[ITEMS[i].r] + "</strong>" + ITEMS[i].e;
+    f.style.display = "block";
+    prog.children[i].classList.add(ok ? "hecho-ok" : "hecho-mal");
+    prog.children[i].classList.remove("actual");
+    $("cont-siguiente").style.display = "block";
+    $("siguiente").focus();
+  });
+});
+$("siguiente").addEventListener("click", () => {
+  i++;
+  if (i < ITEMS.length) { pinta(); }
+  else {
+    $("zona-juego").style.display = "none";
+    $("resultado").style.display = "block";
+    $("puntos").textContent = puntos;
+    const pct = puntos / ITEMS.length;
+    const m = MSJ || {
+      alto: "Dominio claro. Está listo(a) para la acción del paso 3 sobre su propia asignatura.",
+      medio: "Buen avance. Revise las tarjetas del paso 1 y fíjese en la pista clave antes de pasar a la acción.",
+      bajo: "La idea aún está en construcción — es normal: para eso existe esta cápsula. Revise el paso 1 e intente de nuevo."
+    };
+    $("mensaje-final").textContent = pct >= .85 ? m.alto : pct >= .6 ? m.medio : m.bajo;
+  }
+});
+$("reiniciar").addEventListener("click", () => {
+  i = 0; puntos = 0;
+  [...prog.children].forEach(el => el.className = "");
+  $("zona-juego").style.display = "block";
+  $("resultado").style.display = "none";
+  pinta();
+});
+pinta();
+</script>
