@@ -118,6 +118,10 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
 - `agents/skills/` — inventario maestro de las 15 skills de producción (códigos `SKL-GEN`, `SKL-PRO`,
   `SKL-DIS`, `SKL-EVAL`, `SKL-EXT`, `SKL-IA`), ver [master_inventory.md](agents/skills/master_inventory.md).
 - `admin o herramientas/uploader_antigravity.jsx` — subida del inventario de skills a Firestore.
+- `admin o herramientas/graphify.py` → `graphify-out/` — grafo de conocimiento del repo (documentos,
+  registros `ATH-*`, skills, dolores D1-D7, agentes, países): `graph.html` (visor), `graph.json`,
+  `GRAPH_REPORT.md` (entidades centrales, insumos por producto, huérfanos, duplicados). Regenerar
+  con `python "admin o herramientas/graphify.py"` (requiere `networkx`).
 - `webapp-ecosistema/` — app React + Vite (panel de la Fábrica/Canal): `LaunchCenter`, `MarketHub`,
   `PlannerPro`, `ProductFactory`, `RegionalControl` como componentes principales; `src/data/` contiene
   las bases de conocimiento regionales (`knowledgeBase_*`) y estrategias de lanzamiento.
