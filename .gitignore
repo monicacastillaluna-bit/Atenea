@@ -1,0 +1,13 @@
+# Dependencias (se reconstruyen con npm install)
+node_modules/
+
+# Claves y secretos
+.env
+.env.*
+!.env.example
+*service-account*.json
+*.pem
+*.key
+
+# Compilados
+dist/
