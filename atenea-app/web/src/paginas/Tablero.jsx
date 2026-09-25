@@ -58,7 +58,7 @@ export default function Tablero() {
             ) : (
               <div className="tabla-envoltura">
                 <table className="tabla">
-                  <thead><tr><th>Dolor</th><th>País</th><th className="num">Índice</th><th className="num">Señales</th><th className="num">Con demanda</th><th>Tendencia 30 d</th><th>Productos</th><th /></tr></thead>
+                  <thead><tr><th>Dolor</th><th>País</th><th className="num">Índice</th><th className="num">Señales</th><th className="num">Demanda</th><th>30 días</th><th>Productos</th><th /></tr></thead>
                   <tbody>
                     {t.oportunidades.map((o) => (
                       <tr key={`${o.dolor}${o.pais}`}>
@@ -68,7 +68,7 @@ export default function Tablero() {
                         <td className="num">{o.n}</td>
                         <td className="num">{o.demanda}</td>
                         <td>{o.tendencia > 0 ? `▲ +${o.tendencia}` : o.tendencia < 0 ? `▼ ${o.tendencia}` : '='}</td>
-                        <td>{o.productos.length ? o.productos.map((p) => <span key={p.id} className="chip oro" title={p.titulo}>{p.titulo.length > 22 ? `${p.titulo.slice(0, 22)}…` : p.titulo}</span>) : <span className="tenue">ninguno</span>}</td>
+                        <td>{o.productos.length ? o.productos.map((p) => <span key={p.id} className="chip oro" title={p.titulo}>{p.titulo.length > 16 ? `${p.titulo.slice(0, 16)}…` : p.titulo}</span>) : <span className="tenue">ninguno</span>}</td>
                         <td>
                           <div className="fila" style={{ flexWrap: 'nowrap' }}>
                           <button className="boton mini" onClick={() => ir('senales', { dolor: o.dolor, pais: o.pais })}>Señales</button>
