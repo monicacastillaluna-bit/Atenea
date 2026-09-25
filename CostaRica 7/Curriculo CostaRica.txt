@@ -1,0 +1,1 @@
+Ministerio de Educación Pública de Costa Rica es sumamente detallista y publica un PDF por asignatura (Ej. "Programa de Español", "Programa de Matemáticas"). El repositorio oficial directo del gobierno para descargar las "Cajas de Herramientas" curriculares en PDF es: Caja de Herramientas MEP.
