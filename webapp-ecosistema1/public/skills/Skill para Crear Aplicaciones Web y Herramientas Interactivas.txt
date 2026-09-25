@@ -1,0 +1,66 @@
+name: crear-webapps-educativas
+description: Diseña y desarrolla herramientas interactivas y aplicaciones web de una sola página (SPA) para el ecosistema EdTech, priorizando la usabilidad docente y el rigor técnico.
+
+Skill: Crear Aplicaciones Web y Herramientas Interactivas
+
+Cuándo usar este skill
+
+Cuando se necesite crear una herramienta funcional (ej. generador de planes de clase, calculadora de indicadores educativos).
+
+Para desarrollar simuladores de situaciones de gestión o dinámicas de aula.
+
+Cuando el usuario requiera una "experiencia interactiva" que vaya más allá del contenido estático (PDF/Video).
+
+Inputs necesarios
+
+Objetivo funcional: ¿Qué problema resuelve la herramienta? (Ej. "Automatizar el cálculo de promedios ponderados").
+
+Lógica de negocio/pedagógica: Reglas o fórmulas que rigen la herramienta.
+
+Público objetivo: (Ej. Administrativos en España, docentes de aula en México).
+
+Referencia de estilo: Consultar obligatoriamente definir-voz-estilo-edtech.
+
+Workflow
+
+Arquitectura de Información: Definir qué datos entran (inputs) y qué resultados salen (outputs).
+
+Diseño de Interfaz (UI): Planificar una disposición limpia usando Tailwind CSS, con botones claros y tipografía legible para docentes.
+
+Desarrollo de Lógica: Escribir el código (HTML/JS o React) asegurando que sea robusto y maneje errores con elegancia.
+
+Integración de Marca: Validar que los mensajes de error, etiquetas de botones y textos de ayuda sigan la voz de la experta (profesional y cercana).
+
+Validación de Accesibilidad: Asegurar que la herramienta sea usable en dispositivos móviles y computadoras.
+
+Instrucciones
+
+Técnicas: * Utilizar exclusivamente un único archivo (Single-File Mandate).
+
+Estilizar con clases de Tailwind CSS para un acabado moderno y "premium".
+
+No usar alertas de navegador; emplear notificaciones internas o cuadros de diálogo.
+
+Tono y UX: * El lenguaje en la interfaz debe ser el de una "colega experta".
+
+Evitar la jerga técnica de programación; usar términos pedagógicos y de gestión.
+
+Nivel de libertad: Baja (Pasos exactos). El código debe ser funcional y estar listo para ejecutarse sin dependencias externas complejas.
+
+Output (formato exacto)
+
+Presentar el resultado como un archivo funcional:
+
+Nombre de la Herramienta:
+
+Descripción de uso: Breve párrafo explicando cómo interactuar con ella.
+
+Bloque de Código: El archivo completo .html o .jsx con comentarios explicativos en español.
+
+Manual de Usuario: 3 pasos clave para que el docente aproveche la herramienta.
+
+Manejo de errores
+
+Si la lógica propuesta por el usuario es ambigua, la skill debe proponer una solución estándar basada en las mejores prácticas de gestión educativa.
+
+Si el código falla, debe incluir una sección de "Solución de problemas" dentro de la propia aplicación web.
