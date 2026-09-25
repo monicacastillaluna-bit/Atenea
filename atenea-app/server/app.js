@@ -11,8 +11,8 @@ import { calcularSaliencia } from './lib/saliencia.js';
 import { ESTADOS, obtenerFicha, crearFicha, actualizarFicha, anotar, registrarCompuerta, proponerFicha } from './lib/fabrica.js';
 import { importarVentas } from './lib/canal.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
-import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore } from './lib/respaldo.js';
-import { estadoIA, ErrorIA } from './ai/index.js';
+import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
+import { estadoIA, ErrorIA, probarIA } from './ai/index.js';
 import { exec } from 'node:child_process';
 import { carpetaDatos } from './lib/datos.js';
 
@@ -266,6 +266,8 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     res.json(exportar(db));
   });
   api.post('/respaldo', (req, res) => res.json({ restaurado: importar(db, req.body) }));
+  api.post('/ia/probar', async (req, res) => res.json(await probarIA(db)));
+  api.post('/firestore/probar', async (req, res) => res.json(await probarFirestore()));
   api.post('/firestore/subir', async (req, res) => res.json({ subido: await subirAFirestore(db) }));
   api.post('/firestore/bajar', async (req, res) => res.json({ restaurado: await bajarDeFirestore(db) }));
 

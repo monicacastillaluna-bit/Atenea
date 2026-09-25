@@ -204,3 +204,9 @@ test('API: flujo señal manual → validación → ficha → compuerta', async (
   assert.equal((await pedir('/estado')).json.ia.proveedor, 'gemini');
   assert.equal((await pedir('/no-existe')).status, 404);
 });
+
+test('probar Firestore sin configurar da un mensaje claro', async () => {
+  const { probarFirestore } = await import('../server/lib/respaldo.js');
+  delete process.env.FIREBASE_SERVICE_ACCOUNT;
+  await assert.rejects(probarFirestore(), /FIREBASE_SERVICE_ACCOUNT/);
+});

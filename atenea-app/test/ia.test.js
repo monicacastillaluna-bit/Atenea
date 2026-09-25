@@ -99,3 +99,19 @@ test('clasificación con IA: descarta frases que no están en el texto y código
   assert.equal(s2.estado, 'descartada');
   assert.equal(s2.frase_dolor, null);
 });
+
+test('probar IA y mensajes claros ante errores frecuentes', async () => {
+  const { probarIA } = await import('../server/ai/index.js');
+  const db = abrirDb(':memory:');
+  responder = () => ({ status: 200, body: mensaje('{"ok":true,"saludo":"Hola"}') });
+  const r = await probarIA(db);
+  assert.equal(r.saludo, 'Hola');
+  assert.equal(r.modelo, 'claude-opus-5');
+  responder = () => ({ status: 400, body: { type: 'error', error: { type: 'invalid_request_error', message: 'Your credit balance is too low to access the Anthropic API.' } } });
+  await assert.rejects(probarIA(db), /no tiene saldo/);
+  responder = () => ({ status: 404, body: { type: 'error', error: { type: 'not_found_error', message: 'model: claude-x' } } });
+  await assert.rejects(probarIA(db), /no existe/);
+  guardarAjuste(db, 'ia_proveedor', 'gemini');
+  responder = () => ({ status: 400, body: { error: { message: 'API key not valid. Please pass a valid API key.' } } });
+  await assert.rejects(probarIA(db), /GEMINI_API_KEY/);
+});

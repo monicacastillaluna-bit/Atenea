@@ -31,6 +31,7 @@ export function importar(db, datos) {
 }
 
 let firestore = null;
+let proyecto = null;
 
 export function estadoFirestore(db) {
   const archivo = process.env.FIREBASE_SERVICE_ACCOUNT;
@@ -53,7 +54,16 @@ async function conectar() {
   } catch {
     throw new Error('Falta el paquete firebase-admin: ejecuta "npm install" en atenea-app.');
   }
-  const cuenta = JSON.parse(fs.readFileSync(archivo, 'utf8'));
+  let cuenta;
+  try {
+    cuenta = JSON.parse(fs.readFileSync(archivo, 'utf8'));
+  } catch {
+    throw new Error('El archivo del service account no es un JSON válido. Descárgalo de nuevo desde la consola de Firebase.');
+  }
+  if (cuenta.type !== 'service_account' || !cuenta.project_id) {
+    throw new Error('Ese archivo no es un service account de Firebase (le falta "type": "service_account" o "project_id").');
+  }
+  proyecto = cuenta.project_id;
   const app = admin.app.getApps().find((a) => a.name === 'atenea-app')
     ?? admin.app.initializeApp({ credential: admin.app.cert(cuenta) }, 'atenea-app');
   firestore = admin.fs.getFirestore(app);
@@ -61,6 +71,26 @@ async function conectar() {
 }
 
 const ref = (fsdb, t) => fsdb.collection(RAIZ[0]).doc(RAIZ[1]).collection(RAIZ[2]).doc(RAIZ[3]).collection(coleccion(t));
+
+// Comprueba credenciales y permisos leyendo sin escribir nada.
+export async function probarFirestore() {
+  const fsdb = await conectar();
+  try {
+    const base = fsdb.collection(RAIZ[0]).doc(RAIZ[1]).collection(RAIZ[2]).doc(RAIZ[3]);
+    const copia = await base.collection(coleccion('paises')).limit(1).get();
+    const corpus = await base.collection('corpus').limit(1).get();
+    return { proyecto, copia_existente: !copia.empty, corpus_visible: !corpus.empty };
+  } catch (e) {
+    firestore = null;
+    if (/PERMISSION_DENIED|permission/i.test(e.message)) {
+      throw new Error(`El service account no tiene permiso sobre Firestore en el proyecto ${proyecto}. Revisa en la consola de Google Cloud que tenga el rol «Cloud Datastore User» o «Editor».`, { cause: e });
+    }
+    if (/NOT_FOUND|does not exist/i.test(e.message)) {
+      throw new Error(`El proyecto ${proyecto} no tiene una base de Firestore activa. Actívala en la consola de Firebase.`, { cause: e });
+    }
+    throw new Error(`No se pudo conectar con Firestore (${proyecto}): ${e.message}`, { cause: e });
+  }
+}
 
 // Sube todas las tablas (sobrescribe por id: es idempotente) y borra en la nube lo que ya no existe localmente.
 export async function subirAFirestore(db) {
