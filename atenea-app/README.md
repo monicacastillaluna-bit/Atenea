@@ -27,7 +27,10 @@ simulados y enfocada en educación básica.
      *Ajustes → Motor de IA*.
 4. Vuelve a abrir `Iniciar Atenea.bat`. La app se abre en `http://localhost:5180`.
 
-Para usarla, deja abierta la ventana negra; al cerrarla, la app se detiene. Mientras está abierta,
+**Desde el primer arranque tienes un ícono «Atenea» en el escritorio.** Úsalo para abrir la app:
+- Un doble clic abre el navegador de una. Si la app ya estaba corriendo, solo abre la pestaña.
+- La ventana negra queda minimizada en la barra de tareas; si la cierras, la app se detiene.
+- Solo tarda más la primera vez o después de una actualización, porque instala lo que cambió. Mientras está abierta,
 la recolección automática corre cada 24 horas (el intervalo se cambia en Ajustes).
 
 **Sin clave de IA** la app también funciona: recolecta, clasifica con reglas de palabras clave (menos

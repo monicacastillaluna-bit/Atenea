@@ -26,7 +26,8 @@ const app = crearApp(db, { raizRepo: path.resolve(raizApp, '..'), dirWeb: path.j
 const puerto = Number(process.env.PORT || 5180);
 
 // Solo escucha en este computador: la app es de uso interno y no debe quedar expuesta en la red.
-app.listen(puerto, '127.0.0.1', () => {
+const servidor = app.listen(puerto, '127.0.0.1', (err) => {
+  if (err) return; // se informa en el manejador de 'error'
   const url = `http://localhost:${puerto}`;
   console.log(`Atenea lista en ${url}  (base de datos: ${archivoDb})`);
   iniciarProgramador(db);
@@ -34,4 +35,10 @@ app.listen(puerto, '127.0.0.1', () => {
     const cmd = process.platform === 'win32' ? `start "" "${url}"` : process.platform === 'darwin' ? `open ${url}` : `xdg-open ${url}`;
     exec(cmd);
   }
+});
+servidor.on('error', (e) => {
+  console.error(e.code === 'EADDRINUSE'
+    ? `El puerto ${puerto} ya está en uso: probablemente Atenea (u otra versión) ya está abierta. Cierra esa ventana negra e inténtalo de nuevo.`
+    : `No se pudo iniciar el servidor: ${e.message}`);
+  process.exit(1);
 });

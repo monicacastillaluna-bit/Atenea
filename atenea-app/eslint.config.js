@@ -6,7 +6,7 @@ export default [
   { ignores: ['web/dist', 'node_modules', 'data'] },
   js.configs.recommended,
   {
-    files: ['server/**/*.js', 'test/**/*.js', '*.js', 'web/vite.config.js'],
+    files: ['server/**/*.js', 'test/**/*.js', '*.js', '*.mjs', 'web/vite.config.js'],
     languageOptions: { ecmaVersion: 'latest', sourceType: 'module', globals: globals.node },
   },
   {
