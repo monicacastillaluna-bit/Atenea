@@ -122,24 +122,39 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   registros `ATH-*`, skills, dolores D1-D7, agentes, países): `graph.html` (visor), `graph.json`,
   `GRAPH_REPORT.md` (entidades centrales, insumos por producto, huérfanos, duplicados). Regenerar
   con `python "admin o herramientas/graphify.py"` (requiere `networkx`).
-- `webapp-ecosistema/` — app React + Vite (panel de la Fábrica/Canal): `LaunchCenter`, `MarketHub`,
-  `PlannerPro`, `ProductFactory`, `RegionalControl` como componentes principales; `src/data/` contiene
-  las bases de conocimiento regionales (`knowledgeBase_*`) y estrategias de lanzamiento.
+- `atenea-app/` — **software interno vigente (2026-09-25), uso local**: Node + Express + SQLite
+  (`node:sqlite`) + React/Vite. Radar automático (Google Noticias por país y por tema, Reddit, RSS) →
+  clasificación con IA intercambiable (Claude/Gemini, claves solo en `atenea-app/.env`) → matriz de
+  saliencia dolor × país → fichas de la Fábrica con las 3 compuertas y bitácora → ventas (CSV de
+  Hotmart) que realimentan el Radar. Copia opcional en Firestore (`artifacts/athenea/public/data/app_*`).
+  **Decisión de Mónica (2026-09-25): el Radar del software se enfoca SOLO en docentes de educación
+  superior**, en 19 países (17 de Latinoamérica y el Caribe + México + España), con taxonomía propia
+  ES01-ES09 (propuesta v1, por validar con el panel; distinta de la D1-D7 de básica). La normativa
+  sembrada está `por_verificar`. Arranque en Windows: `atenea-app/Iniciar Atenea.bat`. Ver
+  [atenea-app/README.md](atenea-app/README.md).
+- `webapp-ecosistema1/` — **primera versión, sustituida por `atenea-app/`**: demo React + Vite con
+  datos simulados (métricas y sincronización con Hotmart falsas) y bases de conocimiento de educación
+  básica escritas a mano. Se conserva solo como referencia.
 - `Pilar 1 gestion del concocimiento/` — trabajo de reestructuración lógica y mapeo de necesidades
   (dolor docente prioritario) anterior a este plan.
 - `Plan_de_Trabajo_Ecosistema_Edtech*.docx/.pdf` — plan de trabajo (v1 y v2); v2 es la versión vigente.
 
-## Comandos (webapp-ecosistema)
+## Comandos (atenea-app)
+
+Requiere Node.js 22.13 o superior.
 
 ```bash
-cd webapp-ecosistema
-npm run dev       # servidor de desarrollo (Vite)
-npm run build     # build de producción
+cd atenea-app
+npm install
+npm run dev       # API en :5180 + interfaz con recarga en :5173
+npm start         # sirve la interfaz compilada y la API en http://localhost:5180
+npm run build     # compila la interfaz en web/dist
+npm test          # node --test: servidor + motor de IA contra un servidor falso (sin red ni costo)
 npm run lint      # ESLint
-npm run preview   # sirve el build de producción
 ```
 
-No hay test runner configurado en `webapp-ecosistema` ni en la raíz del repo.
+Las pruebas usan una base en memoria. `ATENEA_DB` apunta a otra base, y `ANTHROPIC_BASE_URL` /
+`GEMINI_BASE_URL` redirigen las llamadas de IA (así lo hacen las pruebas).
 
 ## Esquema de metadatos del Cerebro — v1.1
 
