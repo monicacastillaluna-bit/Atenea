@@ -1,0 +1,42 @@
+# Skill: Definir Voz y Estilo de Marca
+
+## Cuándo usar este skill
+* [cite_start]Cuando se inicie la creación de un nuevo recurso (PDF, video, curso) para asegurar coherencia[cite: 37, 40].
+* [cite_start]Cuando sea necesario adaptar un contenido técnico a un tono más empático y pedagógico[cite: 41].
+* [cite_start]Para validar que el lenguaje sea inclusivo y profesional según los estándares de España y América Latina[cite: 5, 81].
+
+## Inputs necesarios
+1. [cite_start]**Tipo de contenido:** (Ej. Guía técnica, guion de video, mensaje de bienvenida)[cite: 76].
+2. **Nivel de formalidad:** (Sugerido: Profesional-Cercano).
+3. [cite_start]**País(es) de destino:** Para ajustes sutiles de léxico[cite: 97].
+
+## Workflow
+1. [cite_start]**Fase de Planificación:** Identificar si el contenido requiere un tono puramente administrativo o uno de facilitación docente[cite: 47, 50].
+2. [cite_start]**Aplicación de Heurísticas:** Ajustar el texto eliminando "jerga" innecesaria y sustituyéndola por términos de gestión universitaria y pedagogía[cite: 32, 56].
+3. [cite_start]**Validación de Neutralidad:** Revisar que el vocabulario sea comprensible tanto en el Caribe como en el Cono Sur y España[cite: 51, 53].
+4. [cite_start]**Ejecución:** Generar el bloque de texto con el estilo final aplicado[cite: 43].
+
+## Instrucciones
+* [cite_start]**Identidad:** La voz debe sonar como una experta con amplia trayectoria en gestión y administración universitaria (madurez, autoridad y calidez)[cite: 33].
+* [cite_start]**Restricciones:** * No usar términos excesivamente comerciales (evitar "marketing de guerrilla" o promesas exageradas)[cite: 26, 32].
+    * [cite_start]Prohibido el uso de regionalismos marcados; preferir "ordenador" y "computador" alternativamente o usar "equipo"[cite: 81].
+* [cite_start]**Estructura de frases:** Oraciones directas, evitando párrafos de más de 4 líneas para mejorar la legibilidad en entornos virtuales[cite: 31, 35].
+
+## Output (formato exacto)
+Devolver el contenido transformado bajo el esquema:
+* **Texto original:** (Breve referencia).
+* **Texto adaptado:** (Resultado final con la voz de marca).
+* [cite_start]**Notas de estilo:** (Breve explicación de por qué se eligieron ciertos términos)[cite: 82].
+
+---
+
+### Recurso Sugerido: `recursos/matriz-tonos.md`
+[cite_start]Este archivo debería contener una tabla comparativa[cite: 15, 84]:
+
+| Situación | Tono Sugerido | Lo que NO debe ser |
+| :--- | :--- | :--- |
+| **Error en plataforma** | Resolutivo y empático | Frío o puramente técnico |
+| **Lección académica** | Inspirador y estructurado | Informal o disperso |
+| **Feedback a docente** | Constructivo y horizontal | Jerárquico o punitivo |
+
+¿Deseas que usemos esta base para crear ahora la Skill de **"Creación de Cursos"** o la de **""Guiones para Videos y Audios"**?

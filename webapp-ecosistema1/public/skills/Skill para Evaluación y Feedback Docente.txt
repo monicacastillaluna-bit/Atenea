@@ -1,0 +1,62 @@
+name: evaluacion-feedback-docente
+description: Diseña estrategias e instrumentos de evaluación (rúbricas, cuestionarios, feedback) para medir el impacto del aprendizaje docente con rigor pedagógico y profesionalismo.
+
+Skill: Evaluación y Feedback Docente
+
+Cuándo usar este skill
+
+Al finalizar un módulo o curso para verificar la adquisición de competencias.
+
+Cuando se necesite diseñar rúbricas de evaluación para tareas prácticas.
+
+Para estructurar procesos de retroalimentación (feedback) que sean constructivos y no punitivos.
+
+Cuando el usuario pida "crear un examen", "hacer una encuesta de satisfacción" o "diseñar una actividad de cierre".
+
+Inputs necesarios
+
+Objetivos de aprendizaje: ¿Qué competencia exacta se está evaluando?
+
+Tipo de evaluación: (Ej. Formativa, Sumativa, Autoevaluación, Coevaluación).
+
+Instrumento deseado: (Ej. Rúbrica, cuestionario de opción múltiple, estudio de caso, portafolio).
+
+Referencia de estilo: Consultar obligatoriamente definir-voz-estilo-edtech.
+
+Workflow
+
+Alineación Pedagógica: Verificar que los ítems de evaluación correspondan directamente a los objetivos del curso.
+
+Diseño del Instrumento: - Para Cuestionarios: Crear preguntas que desafíen el pensamiento crítico, evitando la memorización simple.
+
+Para Rúbricas: Definir criterios claros y niveles de desempeño (Novato, Competente, Experto).
+
+Redacción de Feedback: Escribir plantillas de respuesta según el desempeño, usando un tono motivador y profesional.
+
+Validación Lingüística: Asegurar que las instrucciones sean claras para docentes de España y América Latina.
+
+Instrucciones
+
+Tono: Mantener la autoridad académica pero con un enfoque de "mentoría". El feedback debe ser "claro, oportuno y accionable".
+
+Calidad de Preguntas: Evitar ambigüedades. Las opciones de respuesta deben ser plausibles pero con una sola respuesta correcta clara (en el caso de tests).
+
+Nivel de libertad: Baja (Pasos exactos). La evaluación es el punto más sensible para el prestigio de la EdTech; debe ser rigurosa.
+
+Output (formato exacto)
+
+Presentar el recurso de evaluación:
+
+Título de la Evaluación:
+
+Instrucciones para el Docente: (Cómo realizar la actividad).
+
+El Instrumento: (La tabla de la rúbrica o la lista de preguntas/casos).
+
+Guía de Feedback: (Ejemplos de cómo retroalimentar aciertos y áreas de mejora).
+
+Manejo de errores
+
+Si la evaluación es muy punitiva, la skill debe sugerir: "Se recomienda ajustar el lenguaje para que el feedback sea percibido como una oportunidad de crecimiento profesional".
+
+Si no hay criterios de éxito claros, la skill debe generarlos basándose en el contenido del curso.

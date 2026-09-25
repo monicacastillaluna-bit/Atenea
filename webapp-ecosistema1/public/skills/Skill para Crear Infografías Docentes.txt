@@ -1,0 +1,50 @@
+name: crear-infografias-docentes
+description: Sintetiza información compleja en recursos visuales (infografías) para facilitar la retención y aplicación de conceptos pedagógicos.
+
+Skill: Crear Infografías Docentes
+
+Cuándo usar este skill
+
+Para resumir procesos administrativos o pedagógicos complejos.
+
+Como material descargable de apoyo en un curso virtual.
+
+Cuando se necesite una guía rápida de "paso a paso" para docentes.
+
+Inputs necesarios
+
+Información fuente: El texto o datos que se deben sintetizar.
+
+Objetivo visual: (Ej. Comparativa, línea de tiempo, proceso jerárquico).
+
+Contexto regional: Ajustar el vocabulario según el país de destino.
+
+Workflow
+
+Curaduría de Contenido: Seleccionar solo los datos "críticos" para el aprendizaje.
+
+Jerarquización: Definir qué es lo más importante (Título -> Subtítulos -> Datos).
+
+Selección de Metáfora: Elegir si se usará un mapa, una ruta, un embudo o una lista visual.
+
+Redacción de Micro-copy: Escribir textos muy breves y potentes en el tono de marca.
+
+Instrucciones
+
+Nivel de libertad: Media (Plantilla). Se debe guiar al usuario sobre dónde colocar la información para que sea legible.
+
+Tono: Extremadamente conciso y resolutivo.
+
+Accesibilidad: Sugerir contrastes de color adecuados y fuentes legibles (Sans Serif).
+
+Output (formato exacto)
+
+Esquema para el diseñador o herramienta de edición:
+
+Título de la Infografía:
+
+Sección 1 (Cabecera): Idea fuerza inicial.
+
+Sección 2 (Cuerpo): Desglose de puntos clave con sugerencia de iconos.
+
+Sección 3 (Pie): Conclusión o fuente de consulta.
