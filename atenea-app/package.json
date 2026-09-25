@@ -1,0 +1,37 @@
+{
+  "name": "atenea-app",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Centro de mando interno de Atenea Grupo Educativo: Radar de dolores docentes de educación superior, Cerebro, Fábrica y Canal. Uso local.",
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "concurrently -n api,web -c blue,magenta \"node --disable-warning=ExperimentalWarning --watch server/index.js\" \"vite --config web/vite.config.js\"",
+    "build": "vite build --config web/vite.config.js",
+    "start": "node --disable-warning=ExperimentalWarning server/index.js",
+    "lint": "eslint .",
+    "test": "node --disable-warning=ExperimentalWarning --test test/*.test.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.128.0",
+    "dotenv": "^18.0.4",
+    "express": "^5.2.1",
+    "fast-xml-parser": "^5.11.1"
+  },
+  "optionalDependencies": {
+    "firebase-admin": "^14.5.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@vitejs/plugin-react": "^6.1.1",
+    "concurrently": "^10.0.5",
+    "eslint": "^10.11.0",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.12.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "vite": "^8.3.1"
+  }
+}
