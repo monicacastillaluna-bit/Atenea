@@ -1,5 +1,8 @@
 # Atenea · Centro de mando interno
 
+> **¿Eres usuaria de la app?** Lee el [Manual de usuario](Manual_de_Usuario.md) (también en
+> [PDF](Manual_de_Usuario.pdf)). Este README es la guía técnica y de instalación.
+
 App de uso **local e interno** para decidir qué producir y vender como edtech. Recoge sola lo que
 se publica sobre los dolores de los **docentes de educación superior** en 19 países (17 de
 Latinoamérica y el Caribe, más México y España), lo clasifica con IA, prioriza por país y lleva cada
