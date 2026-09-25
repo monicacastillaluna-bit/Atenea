@@ -13,6 +13,8 @@ import { importarVentas } from './lib/canal.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore } from './lib/respaldo.js';
 import { estadoIA, ErrorIA } from './ai/index.js';
+import { exec } from 'node:child_process';
+import { carpetaDatos } from './lib/datos.js';
 
 class ErrorCliente extends Error {}
 const exigir = (cond, msg) => { if (!cond) throw new ErrorCliente(msg); };
@@ -55,7 +57,8 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
   api.get('/estado', (req, res) => {
     const conteo = Object.fromEntries(db.prepare('SELECT estado, COUNT(*) AS n FROM senales GROUP BY estado').all()
       .map((r) => [r.estado, r.n]));
-    res.json({ ia: estadoIA(db), firestore: estadoFirestore(db), recoleccion: estadoRecoleccion(db), senales: conteo });
+    res.json({ ia: estadoIA(db), firestore: estadoFirestore(db), recoleccion: estadoRecoleccion(db), senales: conteo,
+      carpeta_datos: carpetaDatos() });
   });
 
   api.get('/tablero', (req, res) => {
@@ -242,7 +245,14 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     valores: Object.fromEntries(Object.keys(AJUSTES_INICIALES).map((k) => [k, leerAjuste(db, k, AJUSTES_INICIALES[k])])),
     ia: estadoIA(db),
     firestore: estadoFirestore(db),
+    carpeta_datos: carpetaDatos(),
   }));
+  // Abre la carpeta de datos en el explorador de archivos (la app solo escucha en este computador).
+  api.post('/abrir-carpeta-datos', (req, res) => {
+    const dir = carpetaDatos();
+    exec(process.platform === 'win32' ? `explorer "${dir}"` : process.platform === 'darwin' ? `open "${dir}"` : `xdg-open "${dir}"`);
+    res.json({ ok: true, carpeta: dir });
+  });
   api.patch('/ajustes', (req, res) => {
     for (const [k, v] of Object.entries(req.body)) {
       exigir(k in AJUSTES_INICIALES, `Ajuste desconocido: ${k}`);

@@ -6,9 +6,9 @@ if not "%~1"=="__dentro" (
 )
 title Atenea - Centro de mando
 cd /d "%~dp0"
-echo Carpeta: %CD%
+echo Carpeta de la app: %CD%
 
-where node >/dev/null 2>nul
+where node >nul 2>nul
 if errorlevel 1 (
   echo No encuentro Node.js. Instala la version LTS desde https://nodejs.org y vuelve a abrir este archivo.
   goto :fin
@@ -21,16 +21,10 @@ if not exist package.json (
   goto :fin
 )
 
-if not exist node_modules (
-  echo Instalando dependencias por primera vez, puede tardar unos minutos...
-  call npm install --no-audit --no-fund
-  if errorlevel 1 goto :error
-)
-
-if not exist .env (
-  copy .env.example .env >nul
-  echo Se creo el archivo .env: agrega tu clave de IA ahi y vuelve a iniciar.
-)
+rem Siempre se revisan las dependencias: tras una actualizacion pueden haber cambiado (si ya estan, tarda segundos).
+echo Revisando dependencias (la primera vez tarda unos minutos)...
+call npm install --no-audit --no-fund --loglevel=error
+if errorlevel 1 goto :error
 
 echo Preparando la interfaz...
 call npm run build --silent
@@ -38,6 +32,7 @@ if errorlevel 1 goto :error
 
 echo.
 echo Atenea se abrira en el navegador. No cierres esta ventana mientras la uses.
+echo Tus datos y claves estan en %USERPROFILE%\Atenea-datos (las actualizaciones no los tocan).
 node --disable-warning=ExperimentalWarning server\index.js --abrir
 goto :fin
 

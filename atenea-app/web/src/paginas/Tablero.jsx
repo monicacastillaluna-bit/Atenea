@@ -32,7 +32,7 @@ export default function Tablero() {
             <div className="aviso-caja">
               <b>Falta la clave de IA.</b> La recolección funciona igual, pero la clasificación usa reglas de palabras
               clave (menos precisa) y no se pueden redactar fichas. Agrega <code>{e.ia.proveedor === 'gemini' ? 'GEMINI_API_KEY' : 'ANTHROPIC_API_KEY'}</code> en
-              el archivo <code>atenea-app/.env</code> y reinicia la app. <a href="#ajustes">Ver ajustes</a>
+              el archivo <code>{e.carpeta_datos}\.env</code> y reinicia la app. <a href="#ajustes">Ver ajustes</a>
             </div>
           )}
           <div className="rejilla r4">

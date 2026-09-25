@@ -130,7 +130,9 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   **Decisión de Mónica (2026-09-25): el Radar del software se enfoca SOLO en docentes de educación
   superior**, en 19 países (17 de Latinoamérica y el Caribe + México + España), con taxonomía propia
   ES01-ES09 (propuesta v1, por validar con el panel; distinta de la D1-D7 de básica). La normativa
-  sembrada está `por_verificar`. Arranque en Windows: `atenea-app/Iniciar Atenea.bat`. Ver
+  sembrada está `por_verificar`. Arranque en Windows: `atenea-app/Iniciar Atenea.bat`. Los datos y las claves del usuario viven FUERA del
+  repo, en `%USERPROFILE%\Atenea-datos` (`atenea.db` + `.env`, configurable con `ATENEA_DATOS`), para que
+  actualizar la app sea reemplazar su carpeta. Ver
   [atenea-app/README.md](atenea-app/README.md).
 - `webapp-ecosistema1/` — **primera versión, sustituida por `atenea-app/`**: demo React + Vite con
   datos simulados (métricas y sincronización con Hotmart falsas) y bases de conocimiento de educación

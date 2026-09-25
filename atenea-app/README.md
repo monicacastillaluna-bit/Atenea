@@ -18,9 +18,10 @@ simulados y enfocada en educación básica.
 ## Instalación (Windows, una sola vez)
 
 1. Instala **Node.js 22.13 o superior** (versión LTS) desde <https://nodejs.org>.
-2. Haz doble clic en **`Iniciar Atenea.bat`**. La primera vez instala las dependencias y crea el
-   archivo `.env`.
-3. Abre `atenea-app/.env` con el Bloc de notas y pega tu clave de IA:
+2. Haz doble clic en **`Iniciar Atenea.bat`**. La primera vez instala las dependencias y crea tu
+   **carpeta de datos**: `C:\Users\<tu usuario>\Atenea-datos`.
+3. Abre el archivo `.env` de esa carpeta con el Bloc de notas (en la app: *Ajustes → Abrir carpeta de
+   datos*) y pega tu clave de IA:
    - Claude: `ANTHROPIC_API_KEY=sk-ant-...` (se obtiene en <https://console.anthropic.com>)
    - o Gemini: `GEMINI_API_KEY=...` (se obtiene en <https://aistudio.google.com>), y elige Gemini en
      *Ajustes → Motor de IA*.
@@ -34,7 +35,7 @@ precisas) y permite validar a mano. Lo único que no puede hacer es redactar fic
 
 ### Copia en Firestore (opcional)
 
-Agrega esta línea a `.env` y reinicia la app:
+Agrega esta línea al `.env` de tu carpeta de datos y reinicia la app:
 
 ```
 FIREBASE_SERVICE_ACCOUNT=C:\Users\Lenovo\secrets\athenea-firebase-adminsdk.json
@@ -46,11 +47,33 @@ Firestore**. Los datos se guardan en `artifacts/athenea/public/data/app_*`, el m
 
 ## Dónde viven los datos
 
-- La base es un solo archivo: `atenea-app/data/atenea.db` (SQLite). No se sube al repositorio.
+- Todo lo tuyo vive en tu **carpeta de datos**, `C:\Users\<tu usuario>\Atenea-datos`, fuera de la
+  carpeta de la app:
+  - `atenea.db`: la base (SQLite), un solo archivo;
+  - `.env`: tus claves.
+
+  Por eso, actualizar la app no toca tus datos. Nada de esto se sube al repositorio.
 - Respaldo: *Ajustes → Descargar respaldo* guarda un JSON con todo. Guárdalo fuera del computador de
   vez en cuando.
-- Las claves van solo en `.env`, que no se sube al repositorio y nunca llega al navegador. El
-  servidor escucha únicamente en este computador (`127.0.0.1`), así que no queda expuesto en la red.
+- Las claves nunca llegan al navegador. El servidor escucha únicamente en este computador
+  (`127.0.0.1`), así que no queda expuesto en la red.
+
+## Cómo actualizar la app
+
+Tus datos y claves están en tu carpeta de datos, fuera de la carpeta de la app, así que actualizar es
+reemplazar la carpeta de la app:
+
+1. **Por precaución, descarga un respaldo:** *Ajustes → Descargar respaldo*.
+2. **Cierra la app** (cierra la ventana negra).
+3. **Descarga la versión nueva.** En la página del repositorio en GitHub, pulsa *Code → Download
+   ZIP* y luego clic derecho sobre el ZIP → *Extraer todo*.
+4. **Abre la versión nueva** con `atenea-app\Iniciar Atenea.bat`. El iniciador instala lo que haya
+   cambiado y la app abre con todos tus datos.
+5. **Comprueba** que tus señales y fichas siguen ahí. Después puedes borrar la carpeta vieja.
+
+**Si vienes de la primera versión** (la que guardaba los datos en `atenea-app\data`): antes del paso
+4, copia la carpeta `data` y el archivo `.env` de tu `atenea-app` vieja a la `atenea-app` nueva. Al
+arrancar, la app los copia a tu carpeta de datos y ya no hace falta repetirlo.
 
 ## Cómo decide la app (y dónde decides tú)
 

@@ -85,7 +85,7 @@ async function llamarGemini({ modelo, sistema, usuario, esquema, maxTokens }) {
 export async function generarJson(db, { sistema, usuario, esquema, maxTokens = 16000, esfuerzo = 'high' }) {
   const est = estadoIA(db);
   if (!est.disponible) {
-    throw new ErrorIA(`No hay clave configurada para ${est.proveedor}. Agrégala en el archivo .env (ver README).`);
+    throw new ErrorIA(`No hay clave configurada para ${est.proveedor}. Agrégala en el archivo .env de tu carpeta de datos (Ajustes → Abrir carpeta de datos).`);
   }
   const args = { modelo: est.modelo, sistema, usuario, esquema, maxTokens, esfuerzo };
   try {

@@ -21,7 +21,7 @@ function Formulario({ valores, ia, onGuardado }) {
         <label className="lbl">Señales por llamada al clasificar
           <input className="campo" type="number" min={1} max={20} value={v.lote_clasificacion} onChange={(e) => cambiar('lote_clasificacion', Number(e.target.value))} /></label>
         <p className="tenue" style={{ margin: 0 }}>
-          Las claves no se escriben aquí: van en el archivo <code>atenea-app/.env</code> (<code>ANTHROPIC_API_KEY</code>, <code>GEMINI_API_KEY</code>)
+          Las claves no se escriben aquí: van en el archivo <code>.env</code> de tu carpeta de datos (<code>ANTHROPIC_API_KEY</code>, <code>GEMINI_API_KEY</code>)
           y nunca salen de este computador. Reinicia la app después de editarlo.
         </p>
       </div>
@@ -78,6 +78,12 @@ export default function Ajustes() {
       <Cabecera titulo="Ajustes y respaldo">Configuración de la IA, del Radar y copias de seguridad de la base local.</Cabecera>
       <Carga estado={aj}>{(a) => (
         <>
+          <div className="tarjeta fila fila-sep">
+            <div><h2>Tu carpeta de datos</h2>
+              <p className="suave" style={{ margin: '4px 0 0' }}>Aquí viven tu base (<code>atenea.db</code>) y tus claves (<code>.env</code>): <code>{a.carpeta_datos}</code>.
+                Está fuera de la carpeta de la app, así que actualizar la app no la toca.</p></div>
+            <button className="boton" onClick={() => ejecutar(() => api('/abrir-carpeta-datos', { metodo: 'POST', cuerpo: {} }))}>Abrir carpeta de datos</button>
+          </div>
           <Formulario valores={a.valores} ia={a.ia} onGuardado={aj.recargar} />
           <Paises />
           <div className="rejilla r2">
@@ -95,7 +101,7 @@ export default function Ajustes() {
                 <>
                   <p className="suave" style={{ margin: 0 }}>Proyecto <code>athenea-b8efd</code>, colecciones <code>artifacts/athenea/public/data/app_*</code>.
                     Última subida: {fechaHora(a.firestore.ultima_sincronizacion)}.</p>
-                  {!a.firestore.archivo_existe && <div className="error">No encuentro el archivo del service account indicado en .env.</div>}
+                  {!a.firestore.archivo_existe && <div className="error">No encuentro el archivo del service account indicado en el .env de tu carpeta de datos.</div>}
                   <div className="fila">
                     <button className="boton primario" disabled={ocupado} onClick={() => ejecutar(() => api('/firestore/subir', { metodo: 'POST', cuerpo: {} }), 'Copia subida a Firestore').then(aj.recargar)}>Subir copia ahora</button>
                     <button className="boton" disabled={ocupado} onClick={() => window.confirm('Esto REEMPLAZA los datos locales por la copia de Firestore. ¿Continuar?')
@@ -103,7 +109,7 @@ export default function Ajustes() {
                   </div>
                 </>
               ) : (
-                <p className="suave" style={{ margin: 0 }}>No configurado. Agrega en <code>.env</code> la línea
+                <p className="suave" style={{ margin: 0 }}>No configurado. Agrega en el <code>.env</code> de tu carpeta de datos la línea
                   <code>FIREBASE_SERVICE_ACCOUNT=C:\Users\Lenovo\secrets\athenea-firebase-adminsdk.json</code> y reinicia la app.</p>
               )}
             </div>

@@ -45,7 +45,7 @@ async function conectar() {
   if (firestore) return firestore;
   const archivo = process.env.FIREBASE_SERVICE_ACCOUNT;
   if (!archivo || !fs.existsSync(archivo)) {
-    throw new Error('Firestore no está configurado: define FIREBASE_SERVICE_ACCOUNT en .env con la ruta al service account.');
+    throw new Error('Firestore no está configurado: define FIREBASE_SERVICE_ACCOUNT en el .env de tu carpeta de datos con la ruta al service account.');
   }
   let admin;
   try {

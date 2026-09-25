@@ -11,14 +11,16 @@ if (mayor < 22 || (mayor === 22 && menor < 13)) {
 
 const aqui = path.dirname(fileURLToPath(import.meta.url));
 const raizApp = path.resolve(aqui, '..');
+const { prepararDatos } = await import('./lib/datos.js');
+const datos = prepararDatos(raizApp);
 const { config } = await import('dotenv');
-config({ path: path.join(raizApp, '.env'), quiet: true });
+config({ path: datos.env, quiet: true });
 
 const { abrirDb } = await import('./lib/db.js');
 const { crearApp } = await import('./app.js');
 const { iniciarProgramador } = await import('./lib/recoleccion.js');
 
-const archivoDb = process.env.ATENEA_DB || path.join(raizApp, 'data', 'atenea.db');
+const archivoDb = process.env.ATENEA_DB || datos.db;
 const db = abrirDb(archivoDb);
 const app = crearApp(db, { raizRepo: path.resolve(raizApp, '..'), dirWeb: path.join(raizApp, 'web', 'dist') });
 const puerto = Number(process.env.PORT || 5180);
