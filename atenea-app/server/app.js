@@ -57,7 +57,8 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
   api.get('/estado', (req, res) => {
     const conteo = Object.fromEntries(db.prepare('SELECT estado, COUNT(*) AS n FROM senales GROUP BY estado').all()
       .map((r) => [r.estado, r.n]));
-    res.json({ ia: estadoIA(db), firestore: estadoFirestore(db), recoleccion: estadoRecoleccion(db), senales: conteo,
+    const porReglas = db.prepare("SELECT COUNT(*) AS n FROM senales WHERE clasificador = 'reglas' AND estado IN ('clasificada','descartada')").get().n;
+    res.json({ ia: estadoIA(db), firestore: estadoFirestore(db), recoleccion: estadoRecoleccion(db), senales: conteo, por_reglas: porReglas,
       carpeta_datos: carpetaDatos() });
   });
 
@@ -124,6 +125,10 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     if (req.body?.reclasificar_ids?.length) {
       const ids = req.body.reclasificar_ids.map(Number);
       db.prepare(`UPDATE senales SET estado = 'nueva' WHERE id IN (${ids.map(() => '?').join(',')})`).run(...ids);
+    }
+    // Pasa a IA lo que se clasificó con reglas (p. ej. antes de configurar la clave). Lo validado a mano no se toca.
+    if (req.body?.reclasificar_reglas) {
+      db.prepare("UPDATE senales SET estado = 'nueva' WHERE clasificador = 'reglas' AND estado IN ('clasificada','descartada')").run();
     }
     res.json(await clasificarPendientes(db, { limite: 1000, forzarReglas: Boolean(req.body?.reglas) }));
   });

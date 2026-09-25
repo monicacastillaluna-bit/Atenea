@@ -116,11 +116,18 @@ export default function Senales({ params }) {
     .then(recargar);
 
   const pendientes = estado.datos?.senales.nueva ?? 0;
+  const porReglas = estado.datos?.ia.disponible ? (estado.datos?.por_reglas ?? 0) : 0;
 
   return (
     <div className="pila">
       <Cabecera titulo="Señales" acciones={<>
         <button className="boton" onClick={() => setNueva(true)}>Registrar señal a mano</button>
+        {porReglas > 0 && (
+          <button className="boton" disabled={ocupado} title="Señales clasificadas con palabras clave (sin IA). Las que validaste a mano no se tocan."
+            onClick={() => window.confirm(`Se volverán a clasificar con IA ${porReglas} señales. Puede tardar varios minutos. ¿Continuar?`) && clasificar({ reclasificar_reglas: true })}>
+            Reclasificar con IA ({porReglas})
+          </button>
+        )}
         <button className="boton primario" disabled={ocupado || pendientes === 0} onClick={() => clasificar()}>
           {ocupado ? 'Clasificando…' : `Clasificar pendientes (${pendientes})`}
         </button>

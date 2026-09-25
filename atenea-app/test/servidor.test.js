@@ -210,3 +210,21 @@ test('probar Firestore sin configurar da un mensaje claro', async () => {
   delete process.env.FIREBASE_SERVICE_ACCOUNT;
   await assert.rejects(probarFirestore(), /FIREBASE_SERVICE_ACCOUNT/);
 });
+
+test('reclasificar con IA solo reabre lo clasificado por reglas, no lo validado a mano', async (t) => {
+  const db = nuevaDb();
+  db.prepare(`INSERT INTO senales (tipo_fuente, url, titulo, capturado_en, estado, clasificador) VALUES
+    ('manual','r1','a','2026-09-01','clasificada','reglas'),
+    ('manual','r2','b','2026-09-01','descartada','reglas'),
+    ('manual','r3','c','2026-09-01','validada','reglas'),
+    ('manual','r4','d','2026-09-01','clasificada','ia:gemini')`).run();
+  const app = crearApp(db, { raizRepo: RAIZ_REPO });
+  const srv = app.listen(0);
+  t.after(() => srv.close());
+  const base = `http://127.0.0.1:${srv.address().port}/api`;
+  assert.equal((await (await fetch(`${base}/estado`)).json()).por_reglas, 2);
+  // Sin clave, clasificarPendientes usa reglas: lo importante es qué se reabrió.
+  await fetch(`${base}/senales/clasificar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reclasificar_reglas: true }) });
+  assert.equal(db.prepare("SELECT estado FROM senales WHERE url = 'r3'").get().estado, 'validada');
+  assert.equal(db.prepare("SELECT clasificador FROM senales WHERE url = 'r4'").get().clasificador, 'ia:gemini');
+});
