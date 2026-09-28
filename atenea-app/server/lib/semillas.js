@@ -135,6 +135,34 @@ function fuentesIniciales() {
   return f;
 }
 
+// Fuentes especializadas en educación superior (investigación web del 2026-09-28).
+// Las URL de feed siguen el patrón estándar de cada plataforma (WordPress «/feed/», OJS
+// «WebFeedGatewayPlugin», Atom de The Conversation) y NO se pudieron abrir desde el entorno de
+// desarrollo: se comprueban con «Probar» en la app y se pausan las que den error.
+export const FUENTES_V2 = [
+  ['rss', 'Blog · Universidad, sí (Studia XXI, España)', { url: 'https://www.universidadsi.es/feed/', pais: 'ESP', nota: 'Blog de referencia sobre universidad española; profesorado, carrera académica, docencia.' }],
+  ['rss', 'Blog · ES de ES: Espacios de Educación Superior', { url: 'https://www.espaciosdeeducacionsuperior.es/feed/', nota: 'Blog iberoamericano sobre educación superior (España y América Latina).' }],
+  ['rss', 'The Conversation · Educación (España y América Latina)', { url: 'https://theconversation.com/es/educacion/articles.atom', nota: 'Artículos escritos por académicos: condiciones docentes, evaluación, IA, publicar.' }],
+  ['rss', 'Campus Milenio (México)', { url: 'https://suplementocampus.com/feed/', pais: 'MEX', nota: 'Suplemento semanal especializado en educación superior mexicana.' }],
+  ['rss', 'Observatorio IFE · Tec de Monterrey', { url: 'https://observatorio.tec.mx/feed/', nota: 'Tendencias de innovación educativa; red de más de 150.000 docentes y directivos.' }],
+  ['rss', 'Sindicato · ASPU (Colombia)', { url: 'https://aspucol.org/feed/', pais: 'COL', nota: 'Asociación Sindical de Profesores Universitarios: reclamos, negociación, condiciones.' }],
+  ['rss', 'Sindicato · CONADU (Argentina)', { url: 'https://conadu.org.ar/feed/', pais: 'ARG', nota: 'Federación de docentes universitarios: salarios, paros, financiamiento.' }],
+  ['rss', 'Sindicato · CONADU Histórica (Argentina)', { url: 'https://conaduhistorica.org.ar/feed/', pais: 'ARG', nota: 'Federación de docentes universitarios: paros y plan de lucha.' }],
+  ['rss', 'Sindicato · FAPROUASD (Rep. Dominicana)', { url: 'https://faprouasd.org.do/feed/', pais: 'DOM', nota: 'Federación de profesores de la UASD: reclamos salariales, aulas, carga docente.' }],
+  ['rss', 'ONG · Aula Abierta (Venezuela)', { url: 'https://aulaabiertavenezuela.org/index.php/feed/', pais: 'VEN', nota: 'Derechos de los universitarios; salarios y condiciones de los académicos.' }],
+  ['rss', 'ONG · Aula Abierta Latinoamérica', { url: 'https://aulaabiertalatinoamerica.org/feed/', nota: 'Libertad académica y condiciones universitarias en la región.' }],
+  ['rss', 'Observatorio DDHH · Universidad de Los Andes (Venezuela)', { url: 'https://www.uladdhh.org.ve/feed/', pais: 'VEN', nota: 'Reportes mensuales sobre la situación de las universidades y sus profesores.' }],
+  ['rss', 'CSUCA · Red Comunica (Centroamérica y Rep. Dominicana)', { url: 'https://redcomunica.csuca.org/index.php/feed/', nota: 'Consejo Superior Universitario Centroamericano: carrera docente, financiamiento.' }],
+  ['rss', 'Revista · RIES (UNAM-Universia)', { url: 'https://www.ries.universia.unam.mx/index.php/ries/gateway/plugin/WebFeedGatewayPlugin/rss2', nota: 'Investigación sobre educación superior iberoamericana (números nuevos).' }],
+  ['rss', 'Revista · REDU Docencia Universitaria (España)', { url: 'https://polipapers.upv.es/index.php/REDU/gateway/plugin/WebFeedGatewayPlugin/rss2', pais: 'ESP', nota: 'Investigación sobre docencia universitaria (números nuevos).' }],
+  ['rss', 'Revista · Educación Superior ANUIES (México)', { url: 'https://resu.anuies.mx/ojs/index.php/resu/gateway/plugin/WebFeedGatewayPlugin/rss2', pais: 'MEX', nota: 'Revista de la ANUIES (números nuevos).' }],
+  ['google_news', 'Tema · Paros y huelgas de docentes universitarios', { consulta: '("paro" OR "huelga") ("docentes universitarios" OR "profesores universitarios") when:30d', nota: 'Conflictos laborales: señal de intensidad alta.' }],
+  ['google_news', 'Tema · Salud mental y agotamiento docente universitario', { consulta: '("docentes universitarios" OR "profesores universitarios") ("salud mental" OR agotamiento OR burnout OR estrés) when:60d' }],
+  ['google_news', 'Chile · Académicos a honorarios', { consulta: '"académicos a honorarios" OR "profesores taxi" OR "docentes a honorarios" universidad when:60d', pais: 'CHL', gl: 'CL' }],
+  ['google_news', 'México · Profesores de asignatura', { consulta: '"profesores de asignatura" OR "docentes de asignatura" universidad when:60d', pais: 'MEX', gl: 'MX' }],
+  ['google_news', 'Perú · Docentes universitarios y Ley Universitaria', { consulta: '"docentes universitarios" (SUNEDU OR "Ley Universitaria" OR contratados) when:60d', pais: 'PER', gl: 'PE' }],
+];
+
 export const AJUSTES_INICIALES = {
   ia_proveedor: 'claude',
   ia_modelo_claude: 'claude-opus-5',
@@ -184,6 +212,16 @@ export function sembrar(db) {
       'MEX', 'ES01', 'c2_aprobada', JSON.stringify(contenido), t, t);
     db.prepare('INSERT INTO bitacora (ficha_id, fecha, tipo, texto) VALUES (?, ?, ?, ?)')
       .run(r.lastInsertRowid, t, 'nota', 'Importado a la app desde la bitácora del repo. Pendiente: veredicto de Compuerta 3.');
+  }
+  // Fuentes v2: se agregan una sola vez, también a instalaciones existentes, sin duplicar lo que ya esté.
+  if (!db.prepare("SELECT 1 FROM ajustes WHERE clave = 'semilla_fuentes_v2'").get()) {
+    const existentes = new Set(db.prepare('SELECT config FROM fuentes').all()
+      .map((r) => { const c = JSON.parse(r.config); return c.url ?? c.consulta; }));
+    const ins = db.prepare('INSERT INTO fuentes (tipo, nombre, config) VALUES (?, ?, ?)');
+    for (const [tipo, nombre, config] of FUENTES_V2) {
+      if (!existentes.has(config.url ?? config.consulta)) ins.run(tipo, nombre, JSON.stringify(config));
+    }
+    db.prepare("INSERT OR IGNORE INTO ajustes (clave, valor) VALUES ('semilla_fuentes_v2', 'true')").run();
   }
   const st = db.prepare('INSERT OR IGNORE INTO ajustes (clave, valor) VALUES (?, ?)');
   for (const [k, v] of Object.entries(AJUSTES_INICIALES)) st.run(k, JSON.stringify(v));

@@ -228,3 +228,21 @@ test('reclasificar con IA solo reabre lo clasificado por reglas, no lo validado 
   assert.equal(db.prepare("SELECT estado FROM senales WHERE url = 'r3'").get().estado, 'validada');
   assert.equal(db.prepare("SELECT clasificador FROM senales WHERE url = 'r4'").get().clasificador, 'ia:gemini');
 });
+
+test('fuentes v2: se agregan una vez, sin duplicar, también a bases existentes', async () => {
+  const { FUENTES_V2 } = await import('../server/lib/semillas.js');
+  const db = nuevaDb();
+  const total = db.prepare('SELECT COUNT(*) n FROM fuentes').get().n;
+  assert.ok(FUENTES_V2.length >= 20);
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM fuentes WHERE nombre LIKE 'Sindicato%'").get().n, 4);
+  // Simula una base anterior a v2 donde la fuente de CONADU ya existía y vuelve a sembrar.
+  db.exec("DELETE FROM ajustes WHERE clave = 'semilla_fuentes_v2'");
+  db.exec("DELETE FROM fuentes WHERE nombre LIKE 'Revista%'");
+  const { sembrar } = await import('../server/lib/semillas.js');
+  sembrar(db);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM fuentes').get().n, total, 'repone solo lo que faltaba');
+  sembrar(db);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM fuentes').get().n, total, 'no vuelve a sembrar');
+  const urls = db.prepare("SELECT config FROM fuentes WHERE tipo = 'rss'").all().map((r) => JSON.parse(r.config).url);
+  assert.ok(urls.every((u) => /^https:\/\//.test(u)));
+});
