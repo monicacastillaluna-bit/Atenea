@@ -175,6 +175,8 @@ export default function Produccion({ ficha, onCambioFicha }) {
                   </button>
                   <a className="boton" href={`/api/fichas/${ficha.id}/kit`} onClick={(e) => aprobadas === 0 && (e.preventDefault(), avisar('Aún no hay piezas aprobadas.', true))}>Descargar kit (aprobadas)</a>
                   <a className="boton" href={`/api/fichas/${ficha.id}/kit?todas=1`}>Descargar borrador completo</a>
+                  <a className="boton" href={`/api/fichas/${ficha.id}/notebooklm`} title="Piezas aprobadas como fuentes + instrucciones para crear infografía, video, audio y presentación en NotebookLM"
+                    onClick={(e) => aprobadas === 0 && (e.preventDefault(), avisar('Aprueba al menos una pieza para prepararla para NotebookLM.', true))}>Preparar para NotebookLM</a>
                 </div>
               </div>
               {progreso && <div className="aviso-caja" style={{ marginBottom: 10 }}>{progreso} No cierres esta pestaña.</div>}
@@ -202,7 +204,7 @@ export default function Produccion({ ficha, onCambioFicha }) {
                 <button className="boton" disabled={!nueva.trim() || ocupado} onClick={() => ejecutar(() => api(`/fichas/${ficha.id}/piezas`, { metodo: 'POST', cuerpo: { titulo: nueva } }), 'Pieza agregada').then(() => { setNueva(''); recargar(); })}>+ Agregar pieza</button>
               </div>
               <p className="tenue" style={{ marginBottom: 0 }}>
-                Cada pieza sale en Word o PowerPoint con la identidad Atenea. Revisa todo dato normativo: la IA marca en «Pendientes de verificar»
+                Cada pieza sale en Word o PowerPoint con la identidad Atenea. Para infografías, videos y audios, usa «Preparar para NotebookLM». Revisa todo dato normativo: la IA marca en «Pendientes de verificar»
                 lo que no pudo respaldar (bórralo antes de entregar). Las Compuertas 2 y 3 se dan sobre las piezas elaboradas.
               </p>
             </div>

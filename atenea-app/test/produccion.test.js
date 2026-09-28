@@ -129,3 +129,27 @@ test('API: descarga Word y PowerPoint válidos y el kit solo con piezas aprobada
   assert.equal(Object.keys(todo.files).filter((n) => /\.(docx|pptx)$/.test(n)).length, 2);
   assert.equal((await fetch(`${base}/piezas/${ps[2].id}/archivo`)).status, 400, 'pieza sin contenido');
 });
+
+test('paquete para NotebookLM: solo piezas aprobadas, sin «Pendientes de verificar», con instrucciones', async (t) => {
+  const db = abrirDb(':memory:');
+  const app = crearApp(db, { raizRepo: RAIZ_REPO });
+  const srv = app.listen(0);
+  t.after(() => srv.close());
+  const base = `http://127.0.0.1:${srv.address().port}/api`;
+  const f = fichaAprobada(db);
+  const ps = prepararPiezas(db, f.id);
+  assert.equal((await fetch(`${base}/fichas/${f.id}/notebooklm`)).status, 400, 'sin piezas aprobadas');
+  actualizarPieza(db, ps[0].id, { contenido: `${GUIA}\n## Pendientes de verificar (uso interno)\n\n- dato dudoso\n`, estado: 'aprobada' });
+  actualizarPieza(db, ps[1].id, { contenido: GUIA });
+  const zip = await JSZip.loadAsync(Buffer.from(await (await fetch(`${base}/fichas/${f.id}/notebooklm`)).arrayBuffer()));
+  const archivos = Object.keys(zip.files).filter((n) => !n.endsWith('/'));
+  const fuentes = archivos.filter((n) => n.includes('/fuentes/'));
+  assert.equal(fuentes.length, 1);
+  const fuente = await zip.file(fuentes[0]).async('string');
+  assert.doesNotMatch(fuente, /Pendientes de verificar|dato dudoso/);
+  const guia = await zip.file(archivos.find((n) => n.endsWith('INSTRUCCIONES_NotebookLM.md'))).async('string');
+  assert.match(guia, /cuaderno \*\*nuevo y aparte\*\*/);
+  assert.match(guia, /ATH-CEREBRO/);
+  assert.match(guia, /Infografía/);
+  assert.match(db.prepare("SELECT texto FROM bitacora WHERE texto LIKE 'Paquete para NotebookLM%'").get().texto, /1 pieza/);
+});

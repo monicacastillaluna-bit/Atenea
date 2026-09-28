@@ -12,6 +12,7 @@ import { ESTADOS, obtenerFicha, crearFicha, actualizarFicha, anotar, registrarCo
 import { importarVentas } from './lib/canal.js';
 import { listarPiezas, prepararPiezas, crearPieza, actualizarPieza, elaborarPieza, deshacerPieza } from './lib/produccion.js';
 import { generarArchivo, archivoPieza, kitZip } from './lib/documentos.js';
+import { paqueteNotebookLM } from './lib/notebooklm.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
 import { estadoIA, ErrorIA, probarIA } from './ai/index.js';
@@ -285,6 +286,18 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     const { buffer, total } = await kitZip(listarPiezas(db, f.id), f, { soloAprobadas: req.query.todas !== '1' });
     exigir(total > 0, req.query.todas === '1' ? 'Ninguna pieza tiene contenido todavía.' : 'Aún no hay piezas aprobadas. Aprueba al menos una o descarga el borrador completo.');
     const nombre = `${(f.codigo ?? 'kit').replace(/[^\w-]/g, '')}_kit.zip`;
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"`);
+    res.send(buffer);
+  });
+
+  api.get('/fichas/:id/notebooklm', async (req, res) => {
+    const f = fichaPlana(entero(req.params.id));
+    exigir(f, 'Ficha no encontrada');
+    const { buffer, total } = await paqueteNotebookLM(f, listarPiezas(db, f.id));
+    exigir(total > 0, 'Aprueba al menos una pieza: el paquete para NotebookLM solo incluye piezas aprobadas.');
+    anotar(db, f.id, { texto: `Paquete para NotebookLM descargado (${total} pieza(s) aprobada(s)).` });
+    const nombre = `${(f.codigo ?? 'producto').replace(/[^\w-]/g, '')}_NotebookLM.zip`;
     res.setHeader('Content-Type', 'application/zip');
     res.setHeader('Content-Disposition', `attachment; filename="${nombre}"`);
     res.send(buffer);

@@ -483,6 +483,24 @@ vuelve a «Borrador» y hay que aprobarla de nuevo.
 - **Descargar borrador completo:** el ZIP con todas las piezas que tengan contenido, aprobadas o no.
   Sirve para revisar el kit entero antes de las Compuertas 2 y 3.
 
+**6. Infografías, videos y audios con NotebookLM.** La app no diseña imágenes ni graba videos, pero
+prepara todo para que NotebookLM los genere a partir de tus piezas aprobadas:
+
+1. Pulsa **Preparar para NotebookLM**. Se descarga un ZIP con dos cosas:
+   - la carpeta `fuentes`, con tus piezas aprobadas en texto, ya sin la sección «Pendientes de
+     verificar»;
+   - el archivo `INSTRUCCIONES_NotebookLM.md`.
+2. Abre las instrucciones: tienen los pasos y los **textos listos para pegar** para pedir infografía,
+   resumen en video, resumen en audio (formato pódcast), presentación y material de estudio.
+3. En https://notebooklm.google.com crea un **cuaderno nuevo y aparte** para el producto y sube los
+   archivos de `fuentes`. **No uses los cuadernos del Cerebro** (`ATH-CEREBRO-…`): esos solo guardan
+   normativa oficial.
+4. Revisa lo que genere NotebookLM con la lista de control de las instrucciones antes de usarlo o
+   venderlo. Sus diseños salen con el estilo de Google, no con la paleta de Atenea.
+
+Si usas Claude Code en tu computador, la sección 4 de las instrucciones trae un pedido listo para que
+lo haga con la skill de NotebookLM.
+
 **Qué elabora bien y qué no:**
 
 | Pieza | Resultado |
@@ -490,7 +508,7 @@ vuelve a «Borrador» y hay que aprobarla de nuevo.
 | Guías, manuales, plantillas, rúbricas, listas de cotejo, bancos de ejemplos, workbooks | Completas, en Word |
 | Guiones de video o audio, correos, textos de venta, prompts | Completos, en Word |
 | Presentaciones | Estructura y texto completos en PowerPoint; el diseño fino lo puedes mejorar tú o en Canva |
-| Infografías, imágenes, videos | Solo el texto o guion, no el diseño visual |
+| Infografías, videos, audios | La app hace el texto o guion; el material visual o de audio lo genera NotebookLM con **Preparar para NotebookLM** |
 
 > **Recuerda:** la IA produce un borrador de calidad, no el producto final. Tu revisión, sobre todo
 > de lo normativo, es la Compuerta 2.
