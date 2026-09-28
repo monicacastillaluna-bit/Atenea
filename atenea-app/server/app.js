@@ -10,6 +10,8 @@ import { recolectar } from './collectors/index.js';
 import { calcularSaliencia } from './lib/saliencia.js';
 import { ESTADOS, obtenerFicha, crearFicha, actualizarFicha, anotar, registrarCompuerta, proponerFicha } from './lib/fabrica.js';
 import { importarVentas } from './lib/canal.js';
+import { listarPiezas, prepararPiezas, crearPieza, actualizarPieza, elaborarPieza, deshacerPieza } from './lib/produccion.js';
+import { generarArchivo, archivoPieza, kitZip } from './lib/documentos.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
 import { estadoIA, ErrorIA, probarIA } from './ai/index.js';
@@ -216,6 +218,76 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     }, raizRepo);
     exigir(f, 'Ficha no encontrada');
     res.json(f);
+  });
+
+  // ---------- Fábrica: producción de piezas
+  const pieza = (id) => {
+    const p = db.prepare('SELECT * FROM piezas WHERE id = ?').get(entero(id));
+    exigir(p, 'Pieza no encontrada');
+    return p;
+  };
+  const fichaPlana = (id) => fila(db.prepare('SELECT * FROM fichas WHERE id = ?').get(id));
+  api.get('/fichas/:id/piezas', (req, res) => res.json(listarPiezas(db, entero(req.params.id))));
+  api.post('/fichas/:id/piezas/preparar', (req, res) => {
+    try {
+      res.json(prepararPiezas(db, entero(req.params.id)));
+    } catch (e) {
+      throw new ErrorCliente(e.message);
+    }
+  });
+  api.post('/fichas/:id/piezas', (req, res) => {
+    exigir(req.body.titulo?.trim(), 'La pieza necesita un nombre');
+    res.status(201).json(crearPieza(db, entero(req.params.id), { ...req.body, titulo: req.body.titulo.trim() }));
+  });
+  api.patch('/piezas/:id', (req, res) => {
+    const permitidos = ['titulo', 'tipo', 'skill_codigo', 'instrucciones', 'estado', 'contenido', 'orden'];
+    const cambios = Object.fromEntries(Object.entries(req.body).filter(([k]) => permitidos.includes(k)));
+    exigir(!cambios.estado || ['pendiente', 'borrador', 'aprobada'].includes(cambios.estado), 'Estado inválido');
+    exigir(!cambios.tipo || ['documento', 'presentacion'].includes(cambios.tipo), 'Tipo inválido');
+    pieza(req.params.id);
+    res.json(actualizarPieza(db, entero(req.params.id), cambios));
+  });
+  api.delete('/piezas/:id', (req, res) => {
+    db.prepare('DELETE FROM piezas WHERE id = ?').run(entero(req.params.id));
+    res.status(204).end();
+  });
+  api.post('/piezas/:id/elaborar', async (req, res) => {
+    pieza(req.params.id);
+    try {
+      res.json(await elaborarPieza(db, entero(req.params.id), { indicacion: req.body?.indicacion?.trim() ?? '' }, raizRepo));
+    } catch (e) {
+      if (e instanceof ErrorIA) throw e;
+      throw new ErrorCliente(e.message);
+    }
+  });
+  api.post('/piezas/:id/deshacer', (req, res) => {
+    pieza(req.params.id);
+    try {
+      res.json(deshacerPieza(db, entero(req.params.id)));
+    } catch (e) {
+      throw new ErrorCliente(e.message);
+    }
+  });
+  api.get('/piezas/:id/archivo', async (req, res) => {
+    const p = pieza(req.params.id);
+    exigir(p.contenido, 'La pieza todavía no tiene contenido');
+    const buf = await generarArchivo(p, fichaPlana(p.ficha_id));
+    const nombre = archivoPieza(p);
+    res.setHeader('Content-Type', p.tipo === 'presentacion'
+      ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+      : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"; filename*=UTF-8''${encodeURIComponent(nombre)}`);
+    res.send(buf);
+  });
+  api.get('/fichas/:id/kit', async (req, res) => {
+    const f = fichaPlana(entero(req.params.id));
+    exigir(f, 'Ficha no encontrada');
+    const { buffer, total } = await kitZip(listarPiezas(db, f.id), f, { soloAprobadas: req.query.todas !== '1' });
+    exigir(total > 0, req.query.todas === '1' ? 'Ninguna pieza tiene contenido todavía.' : 'Aún no hay piezas aprobadas. Aprueba al menos una o descarga el borrador completo.');
+    const nombre = `${(f.codigo ?? 'kit').replace(/[^\w-]/g, '')}_kit.zip`;
+    res.setHeader('Content-Type', 'application/zip');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"`);
+    res.send(buffer);
   });
 
   // ---------- Canal

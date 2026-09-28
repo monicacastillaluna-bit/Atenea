@@ -97,6 +97,22 @@ CREATE TABLE IF NOT EXISTS fichas (
   creado_en TEXT NOT NULL,
   actualizado_en TEXT NOT NULL
 );
+CREATE TABLE IF NOT EXISTS piezas (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
+  orden INTEGER NOT NULL DEFAULT 0,
+  titulo TEXT NOT NULL,
+  tipo TEXT NOT NULL DEFAULT 'documento' CHECK (tipo IN ('documento','presentacion')),
+  skill_codigo TEXT,
+  instrucciones TEXT NOT NULL DEFAULT '',
+  estado TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','borrador','aprobada')),
+  contenido TEXT NOT NULL DEFAULT '',
+  anterior TEXT,
+  version INTEGER NOT NULL DEFAULT 0,
+  generado_por TEXT,
+  creado_en TEXT NOT NULL,
+  actualizado_en TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS bitacora (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
@@ -126,7 +142,7 @@ CREATE TABLE IF NOT EXISTS ajustes (
 
 // Tablas en el orden en que se exportan/restauran (respetando las referencias).
 export const TABLAS = ['paises', 'dolores', 'fuentes', 'senales', 'ejecuciones',
-  'normativa', 'fichas', 'bitacora', 'ventas', 'ajustes'];
+  'normativa', 'fichas', 'piezas', 'bitacora', 'ventas', 'ajustes'];
 
 // Campos guardados como texto JSON en SQLite.
 const CAMPOS_JSON = new Set(['palabras_clave', 'config', 'dolores', 'dolores_rel', 'contenido']);

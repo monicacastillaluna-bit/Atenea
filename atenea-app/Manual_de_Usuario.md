@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.0 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.1 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -16,7 +16,7 @@ No hace falta saber programar para usar la app.
 4. [Tablero](#4-tablero)
 5. [Radar: señales, matriz, taxonomía y fuentes](#5-radar)
 6. [Cerebro: normativa y skills](#6-cerebro)
-7. [Fábrica: fichas de producto y compuertas](#7-fábrica)
+7. [Fábrica: fichas, compuertas y producción de piezas](#7-fábrica)
 8. [Canal: ventas](#8-canal-ventas)
 9. [Ajustes y respaldo](#9-ajustes-y-respaldo)
 10. [Rutinas recomendadas](#10-rutinas-recomendadas)
@@ -44,7 +44,7 @@ El recorrido completo tiene cuatro etapas, que corresponden a los cuatro módulo
 |---|---|---|
 | 1 | **Radar** | Recoge publicaciones (señales), la IA las clasifica y tú confirmas. |
 | 2 | **Cerebro** | Guarda la normativa por país y las skills de producción. |
-| 3 | **Fábrica** | Convierte un dolor en una ficha de producto con 3 compuertas. |
+| 3 | **Fábrica** | Convierte un dolor en una ficha de producto con 3 compuertas y **elabora sus piezas** en Word y PowerPoint. |
 | 4 | **Canal** | Registra lo vendido, y las ventas vuelven a alimentar el Radar. |
 
 **Regla de oro: la IA propone y tú decides.** Ninguna ficha avanza sin tu veredicto escrito.
@@ -381,6 +381,10 @@ Luego:
 
 ![Detalle de una ficha](manual/img/11-ficha-detalle.jpg)
 
+La ficha tiene dos pestañas:
+- **Ficha:** el contenido, las compuertas, los datos de venta y la bitácora.
+- **Producción:** la elaboración de las piezas. Se explica en la sección 7.4.
+
 **Barra de etapas:** Idea → Borrador → Compuerta 1 → Producción → Compuerta 2 → Compuerta 3 → En
 venta.
 
@@ -413,7 +417,83 @@ comprueba que dicen lo que la ficha afirma.
   para guardarla en la carpeta del producto dentro del proyecto, por ejemplo como `00_ficha.md`.
 - **← Todas las fichas:** vuelve a la lista.
 
-**Eliminar ficha:** borra la ficha y su bitácora. Las ventas asociadas se conservan sin ficha.
+**Eliminar ficha:** borra la ficha, su bitácora y sus piezas. Las ventas asociadas se conservan sin
+ficha.
+
+### 7.4 Producción: elaborar las piezas
+
+Aquí la Fábrica **elabora** cada pieza del kit: no solo la lista, sino el contenido completo, listo
+para revisar. La producción empieza **después de aprobar la Compuerta 1**.
+
+![Producción de piezas](manual/img/15-produccion.jpg)
+
+**1. Preparar.** En la pestaña **Producción**, pulsa **Preparar piezas desde la ficha**.
+- La app crea una pieza por cada línea de «Piezas» de la ficha y la ficha pasa a «En producción».
+- A cada pieza le asigna:
+  - un **tipo de archivo**: Word, o PowerPoint si su nombre dice «presentación», «diapositivas» o
+    «webinar»;
+  - una **skill de producción** según su nombre: una guía usa SKL-PRO-002, una rúbrica SKL-EVAL-001 y
+    un guion SKL-PRO-005.
+
+  Puedes cambiar ambas cosas dentro de cada pieza, en «Tipo y skill de producción».
+- **+ Agregar pieza** suma una pieza que no estaba en la ficha, por ejemplo «Correo de bienvenida al
+  comprador».
+
+**2. Elaborar.** Tienes dos opciones:
+- **Elaborar pendientes (N):** redacta todas las piezas pendientes, una por una. Cada una tarda de 1
+  a 3 minutos. **No cierres la pestaña** mientras dice «Elaborando…».
+- Abre una pieza y pulsa **Elaborar con IA** para hacerla sola.
+
+Para redactar cada pieza, la IA usa:
+- las **instrucciones de su skill** de producción;
+- la **voz de Atenea** (SKL-GEN-001);
+- las **frases de los docentes** citadas en la ficha como evidencia;
+- la **normativa** registrada para el país, respetando si está verificada o no;
+- tus **indicaciones** para esa pieza, si escribiste alguna;
+- la **regla legal**: nunca sugerir aval de una autoridad.
+
+**3. Revisar.** Pulsa **Revisar** en una pieza.
+
+![Revisar una pieza](manual/img/16-pieza.jpg)
+
+- **Vista previa:** así se verá el contenido.
+- **Editar texto:** para corregir tú misma. El formato es sencillo:
+  - `#` para el título y `##` para las secciones;
+  - `- ` para las viñetas y `**texto**` para la negrita;
+  - tablas con `|`.
+
+  En presentaciones, cada `##` es una diapositiva y una línea que empieza con `Notas:` va a las notas
+  del presentador. Pulsa **Guardar cambios** al terminar.
+- **Pedir una nueva versión a la IA:** escribe qué cambiar (por ejemplo, «acorta la introducción y
+  agrega una rúbrica de 4 niveles») y pulsa **Rehacer**. La versión anterior se guarda: con **Volver
+  a la versión anterior** la recuperas.
+- **Indicaciones para esta pieza:** lo que la IA debe tener en cuenta cada vez que la elabore, por
+  ejemplo «incluir un ejemplo de una facultad de salud; máximo 6 páginas».
+- **Pendientes de verificar:** al final de la pieza, la IA lista lo que no pudo respaldar con la
+  normativa o la evidencia. **Verifícalo y borra esa sección antes de entregar.**
+
+**4. Aprobar.** Cuando la pieza esté bien, pulsa **Aprobar pieza**. Si después editas su texto,
+vuelve a «Borrador» y hay que aprobarla de nuevo.
+
+**5. Descargar.**
+- Dentro de cada pieza, **Descargar Word** o **Descargar PowerPoint**. Los archivos llevan portada,
+  colores y tipografías de Atenea, y son editables.
+- **Descargar kit (aprobadas):** un ZIP con las piezas aprobadas, numeradas y con un archivo LEEME,
+  listo para entregar o subir a Hotmart.
+- **Descargar borrador completo:** el ZIP con todas las piezas que tengan contenido, aprobadas o no.
+  Sirve para revisar el kit entero antes de las Compuertas 2 y 3.
+
+**Qué elabora bien y qué no:**
+
+| Pieza | Resultado |
+|---|---|
+| Guías, manuales, plantillas, rúbricas, listas de cotejo, bancos de ejemplos, workbooks | Completas, en Word |
+| Guiones de video o audio, correos, textos de venta, prompts | Completos, en Word |
+| Presentaciones | Estructura y texto completos en PowerPoint; el diseño fino lo puedes mejorar tú o en Canva |
+| Infografías, imágenes, videos | Solo el texto o guion, no el diseño visual |
+
+> **Recuerda:** la IA produce un borrador de calidad, no el producto final. Tu revisión, sobre todo
+> de lo normativo, es la Compuerta 2.
 
 ---
 
@@ -545,6 +625,10 @@ Tus datos no se pierden al actualizar, porque viven en `Atenea-datos`, fuera de 
 | **No veo el archivo `.env`.** | En el Explorador de archivos, activa *Vista → Mostrar → Elementos ocultos*. Ábrelo con clic derecho → Abrir con → Bloc de notas. |
 | **Firestore dice «no configurado».** | Falta la línea `FIREBASE_SERVICE_ACCOUNT=...` en el `.env`, o la app no se reinició después de agregarla. |
 | **Firestore dice «no tiene permiso».** | Revisa en la consola de Google Cloud que el service account tenga el rol «Cloud Datastore User» o «Editor». |
+| **«Primero aprueba la Compuerta 1»** en Producción. | La producción empieza después de esa decisión: registra el veredicto en la pestaña «Ficha» → Compuertas. |
+| **«La ficha no tiene piezas listadas».** | Pulsa **Editar contenido** y escribe las piezas en «Piezas», una por línea. |
+| **«La IA devolvió una pieza demasiado corta».** | Vuelve a intentarlo. Si se repite, agrega indicaciones más concretas a la pieza. |
+| **Elaborar se detuvo a mitad del kit.** | Suele ser la cuota de la IA. Espera unos minutos y pulsa de nuevo **Elaborar pendientes**: sigue con las que falten. |
 | **Borré algo por error.** | Si tienes un respaldo reciente, usa *Ajustes → Restaurar desde archivo* o *Restaurar desde Firestore*. Ten en cuenta que se pierde lo hecho después de ese respaldo. |
 
 Para cualquier otro problema, copia el mensaje exacto (o toma una captura) y compártelo.
@@ -568,6 +652,8 @@ Para cualquier otro problema, copia el mensaje exacto (o toma una captura) y com
 | **Vida media** | Días en que una señal pierde la mitad de su peso. Por defecto, 60. |
 | **Fuente** | Un lugar donde el Radar busca: Google Noticias, Reddit o RSS. |
 | **Ficha** | La propuesta de un producto, con evidencia, normativa, formato y precio hipótesis. |
+| **Pieza** | Cada entregable del kit (una guía, una plantilla, una presentación). La Fábrica la elabora en Word o PowerPoint. |
+| **Kit** | El conjunto de piezas aprobadas de un producto, que se descarga en un ZIP. |
 | **Compuerta** | Un punto de control de calidad con tu veredicto escrito. Son tres antes de vender. |
 | **Bitácora** | El historial de una ficha. |
 | **Código ATH** | Identificador oficial del producto, por ejemplo `ATH-MEX-PRD-0003`. Se asigna en la Compuerta 1. |
