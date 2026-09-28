@@ -5,6 +5,31 @@ import {
 } from '../comun.jsx';
 import { ir } from '../ruta.js';
 
+// Criterios de validación: los mismos que usa la IA al clasificar (ver manual, sección 5.1).
+function GuiaValidacion() {
+  return (
+    <details className="guia-validacion">
+      <summary>Guía de validación: ¿con base en qué decido?</summary>
+      <ol>
+        <li><b>¿Habla de docentes de educación superior?</b> Universidad, instituto técnico o tecnológico, posgrado.
+          Si es educación básica, solo estudiantes o una noticia institucional sin docentes → <b>No es relevante</b>.</li>
+        <li><b>¿Hay un problema real para el docente?</b> Una dificultad, una carga, algo que falta o una necesidad.
+          Logros, rankings, premios o nombramientos → <b>No es relevante</b>.</li>
+        <li><b>¿Qué dolor es?</b> Compáralo con la descripción de cada dolor en Taxonomía. El ★ es el que más pesa en el texto;
+          marca otro solo si el texto lo menciona de verdad. Si no encaja en ninguno, usa el más cercano y escribe
+          «posible dolor nuevo: …» en la nota interna.</li>
+        <li><b>¿Qué tan fuerte es?</b> <b>1</b> = se menciona al pasar · <b>2</b> = alguien lo plantea como problema ·
+          <b>3</b> = paro, conflicto, plazo encima o afecta a muchos.</li>
+      </ol>
+      <p><b>Demanda = Sí</b> solo si alguien pide o buscaría una solución concreta: una guía, un curso, una plantilla
+        o una herramienta. Una queja sin búsqueda de solución es «No».</p>
+      <p><b>País:</b> donde ocurre, no el del medio. <b>Frase-dolor:</b> cópiala tal cual, sin resumirla.</p>
+      <p><b>Si dudas más de un minuto:</b> valida con intensidad 1 y escribe «dudosa» en la nota.
+        <b> Tu criterio manda:</b> puedes descartar lo que te parezca exagerado o sesgado; anota por qué.</p>
+    </details>
+  );
+}
+
 function EditorSenal({ senal, onCerrar, onGuardado }) {
   const { dolores } = useCatalogo();
   const [f, setF] = useState({
@@ -22,6 +47,7 @@ function EditorSenal({ senal, onCerrar, onGuardado }) {
   return (
     <Modal titulo="Validar señal" onCerrar={onCerrar}>
       <div className="pila">
+        <GuiaValidacion />
         <div>
           <div className="senal-tit">{senal.titulo}</div>
           <div className="tenue">{senal.medio} · {fecha(senal.publicado_en)} · <a href={senal.url.startsWith('http') ? senal.url : undefined} target="_blank" rel="noreferrer">abrir fuente</a></div>
