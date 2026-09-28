@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.1 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.2 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -205,8 +205,62 @@ escribe y pulsa **Enter**.
    - Pulsa **Validar** si la señal es relevante.
    - Pulsa **No es relevante** si no habla de docentes de educación superior.
 
-> **Consejo:** para el piloto, cuenta cuántas señales acertó la IA **sin** que tuvieras que cambiar
-> nada. Es la medida de su precisión.
+#### Criterios para validar: ¿con base en qué decido?
+
+Usa los mismos criterios con los que clasifica la IA. Así, tu revisión y la suya se miden igual. En la
+ventana **Validar señal** tienes esta guía resumida en el recuadro plegable **«Guía de validación»**.
+
+Abre la fuente y responde, en orden:
+
+**1. ¿Habla de docentes de educación superior?** Universidad, instituto técnico o tecnológico,
+posgrado: el texto los menciona o es claro que les afecta.
+- ✅ «Profesores de hora cátedra de la Universidad X denuncian…»
+- ❌ «Maestros de primaria…» (es educación básica)
+- ❌ «Estudiantes protestan por la matrícula…», si no involucra a los docentes
+- ❌ «Universidad inaugura nuevo edificio», porque no menciona a los docentes
+
+Si no → **No es relevante**.
+
+**2. ¿Hay un problema real para el docente?** Una dificultad, una carga, algo que le falta o una
+necesidad; una noticia neutra no cuenta.
+- ✅ «…no tenemos tiempo para armar las evidencias de acreditación»
+- ❌ «La universidad obtuvo la acreditación de alta calidad» (es un logro)
+- ❌ Rankings, premios, nombramientos
+
+Si no → **No es relevante**.
+
+**3. ¿Qué dolor es?** Compáralo con la descripción de cada dolor en *Radar → Taxonomía*.
+- El **principal (★)** es el que más peso tiene en el texto.
+- Marca otro dolor solo si el texto lo menciona de verdad, no si «se relaciona un poco».
+- Si no encaja en ninguno pero sí es un dolor, valídalo con el más cercano y escribe en la **Nota
+  interna**: «posible dolor nuevo: …». Si se repite, es candidato a sumarse a la taxonomía.
+
+**4. ¿Qué tan fuerte es y alguien pide solución?**
+
+| Intensidad | Cuándo | Ejemplo |
+|---|---|---|
+| **1 · mención** | El problema aparece al pasar | «…entre otros retos, la acreditación» |
+| **2 · queja explícita** | Alguien lo plantea como problema | «Estamos agotados con tanto formato» |
+| **3 · crisis o urgencia** | Paro, conflicto, plazo encima, afecta a muchos | «Docentes en paro por salarios atrasados» |
+
+**Demanda = Sí** solo si alguien **pide o buscaría una solución concreta**: una guía, un curso, una
+plantilla o una herramienta. Por ejemplo: «¿alguien tiene un formato de rúbrica?» o «nadie nos
+capacita en esto». Una queja sin búsqueda de solución es «No».
+
+**Los demás campos:**
+- **País:** donde ocurre, no el país del medio. Si no se sabe, «Sin país».
+- **Frase-dolor:** copia **tal cual** las palabras más fuertes del texto. Es la voz del docente que
+  después usa la Fábrica al redactar las piezas.
+
+**Tu criterio también cuenta.** Tu experiencia en gestión universitaria es el filtro final. Si algo
+te parece exagerado, sesgado o fuera de contexto, descártalo aunque cumpla la regla, y anota por qué.
+
+**Si dudas más de un minuto,** valida con intensidad 1 y escribe «dudosa» en la nota. Revísalas en
+bloque al final de la semana.
+
+> **Para el piloto:** cuenta como **acierto de la IA** la señal que validas **sin cambiar**
+> relevancia, dolor principal ni país. Los ajustes menores de intensidad o del resumen no la vuelven
+> un fallo.
 
 #### Registrar una señal a mano
 
