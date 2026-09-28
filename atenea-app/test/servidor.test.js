@@ -2,10 +2,13 @@
 // clasificación, saliencia, importación de ventas, compuertas y la API completa.
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
+import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { abrirDb, fila } from '../server/lib/db.js';
-import { parsearFeed, parsearReddit, urlGoogleNews } from '../server/collectors/index.js';
+import { parsearFeed, parsearOpenAlex, parsearReddit, urlGoogleNews, urlOpenAlex } from '../server/collectors/index.js';
 import { clasificarPorReglas, clasificarPendientes } from '../server/lib/clasificador.js';
 import { ejecutarRecoleccion } from '../server/lib/recoleccion.js';
 import { calcularSaliencia } from '../server/lib/saliencia.js';
@@ -227,4 +230,69 @@ test('reclasificar con IA solo reabre lo clasificado por reglas, no lo validado 
   await fetch(`${base}/senales/clasificar`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ reclasificar_reglas: true }) });
   assert.equal(db.prepare("SELECT estado FROM senales WHERE url = 'r3'").get().estado, 'validada');
   assert.equal(db.prepare("SELECT clasificador FROM senales WHERE url = 'r4'").get().clasificador, 'ia:gemini');
+});
+
+test('fuentes v2: se agregan una vez, sin duplicar, también a bases existentes', async () => {
+  const { FUENTES_V2 } = await import('../server/lib/semillas.js');
+  const db = nuevaDb();
+  const total = db.prepare('SELECT COUNT(*) n FROM fuentes').get().n;
+  assert.ok(FUENTES_V2.length >= 20);
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM fuentes WHERE nombre LIKE 'Sindicato%'").get().n, 4);
+  // Simula una base anterior a v2 donde la fuente de CONADU ya existía y vuelve a sembrar.
+  db.exec("DELETE FROM ajustes WHERE clave = 'semilla_fuentes_v2'");
+  db.exec("DELETE FROM fuentes WHERE nombre LIKE 'Revista%'");
+  const { sembrar } = await import('../server/lib/semillas.js');
+  sembrar(db);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM fuentes').get().n, total, 'repone solo lo que faltaba');
+  sembrar(db);
+  assert.equal(db.prepare('SELECT COUNT(*) n FROM fuentes').get().n, total, 'no vuelve a sembrar');
+  const urls = db.prepare("SELECT config FROM fuentes WHERE tipo = 'rss'").all().map((r) => JSON.parse(r.config).url);
+  assert.ok(urls.every((u) => /^https:\/\//.test(u)));
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM ajustes WHERE clave = 'semilla_fuentes_v3'").get().n, 1);
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM fuentes WHERE nombre LIKE 'Literatura%'").get().n, 4);
+});
+
+const OPENALEX = { results: [
+  { id: 'https://openalex.org/W1', doi: 'https://doi.org/10.1/abc', title: 'Síndrome de burnout en docentes universitarios',
+    publication_date: '2026-05-10', abstract_inverted_index: { El: [0], agotamiento: [1], docente: [2], crece: [3] },
+    authorships: [{ author: { display_name: 'Ana Pérez' }, institutions: [{ country_code: 'CO' }] },
+      { author: { display_name: 'Luis Díaz' }, institutions: [{ country_code: 'CO' }, { country_code: 'US' }] }],
+    primary_location: { landing_page_url: 'https://revista.example/a', source: { display_name: 'Revista Educación' } } },
+  { id: 'https://openalex.org/W2', doi: null, title: 'Precarización en México y España', publication_date: '2026-04-01',
+    abstract_inverted_index: null,
+    authorships: [{ institutions: [{ country_code: 'MX' }] }, { institutions: [{ country_code: 'ES' }] }],
+    primary_location: { landing_page_url: 'https://redalyc.example/w2', source: null } },
+  { id: 'https://openalex.org/W3', title: null },
+] };
+
+test('OpenAlex: arma la búsqueda y reconstruye el resumen y el país', () => {
+  const u = new URL(urlOpenAlex({ consulta: '"burnout" docentes', desde_dias: 30 }, new Date('2026-09-28T00:00:00Z')));
+  assert.equal(u.searchParams.get('search'), '"burnout" docentes');
+  assert.match(u.searchParams.get('filter'), /^from_publication_date:2026-08-29,language:es,authorships\.institutions\.country_code:MX\|/);
+  assert.match(u.searchParams.get('filter'), /\|ES$/);
+  const [a, b, ...resto] = parsearOpenAlex(OPENALEX);
+  assert.equal(resto.length, 0, 'descarta obras sin título');
+  assert.deepEqual([a.url, a.texto, a.autor, a.medio, a.pais, a.publicado_en],
+    ['https://doi.org/10.1/abc', 'El agotamiento docente crece', 'Ana Pérez', 'Revista Educación', 'COL', '2026-05-10T00:00:00.000Z']);
+  assert.deepEqual([b.url, b.medio, b.pais], ['https://redalyc.example/w2', 'OpenAlex', null], 'dos países: que lo decida la IA');
+  assert.equal(parsearOpenAlex(OPENALEX, { pais: 'PER' })[1].pais, 'PER');
+});
+
+test('migración: una base con el tipo de fuente viejo admite OpenAlex sin perder datos', () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'atenea-'));
+  const archivo = path.join(dir, 'vieja.db');
+  const vieja = new DatabaseSync(archivo);
+  vieja.exec(`CREATE TABLE fuentes (id INTEGER PRIMARY KEY AUTOINCREMENT,
+    tipo TEXT NOT NULL CHECK (tipo IN ('google_news','reddit','rss')), nombre TEXT NOT NULL, config TEXT NOT NULL DEFAULT '{}',
+    activo INTEGER NOT NULL DEFAULT 1, ultima_ejecucion TEXT, ultimo_estado TEXT, ultimo_error TEXT, total_items INTEGER NOT NULL DEFAULT 0);
+    INSERT INTO fuentes (id, tipo, nombre, config, total_items) VALUES (7, 'rss', 'Mía', '{"url":"https://mia.example/feed"}', 12);`);
+  vieja.close();
+  const db = abrirDb(archivo);
+  db.prepare(`INSERT INTO senales (fuente_id, tipo_fuente, url, capturado_en) VALUES (7, 'rss', 'u1', '2026-09-01')`).run();
+  assert.deepEqual({ ...db.prepare('SELECT nombre, total_items FROM fuentes WHERE id = 7').get() }, { nombre: 'Mía', total_items: 12 });
+  assert.ok(db.prepare("SELECT COUNT(*) n FROM fuentes WHERE tipo = 'openalex'").get().n >= 4, 'siembra v3');
+  db.prepare('DELETE FROM fuentes WHERE id = 7').run();
+  assert.equal(db.prepare("SELECT fuente_id FROM senales WHERE url = 'u1'").get().fuente_id, null, 'la referencia sigue viva');
+  db.close();
+  fs.rmSync(dir, { recursive: true, force: true });
 });

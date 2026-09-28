@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.2 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.3 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -327,9 +327,12 @@ Son los lugares donde el Radar busca:
 
 | Tipo | Qué trae | Nota |
 |---|---|---|
-| **Google Noticias** | Una búsqueda por país, más cinco por tema. | Trae **titulares**, no el artículo completo. |
+| **Google Noticias** | Una búsqueda por país, más búsquedas por tema y por organismo (OEI, ANUIES, sindicatos españoles, FAPUV, Mineduc, Minedu…). | Trae **titulares**, no el artículo completo. |
 | **Reddit** | Publicaciones de foros. | Trae el texto completo. |
-| **RSS** | Blogs, revistas o portales universitarios que tú agregues. | Trae el texto que publique cada sitio. |
+| **RSS** | Blogs especializados, sindicatos de docentes universitarios, observatorios, organismos (UNESCO IESALC, CLACSO, CRUE) y revistas académicas. La app ya trae 19, y puedes agregar más. | Trae el texto que publique cada sitio. |
+| **Artículos académicos (OpenAlex)** | Artículos recientes en español, de autores de los 19 países, sobre burnout, precarización, satisfacción laboral y desafíos de la profesión docente. Incluye muchas revistas de SciELO, Redalyc y Dialnet. | Trae el título y el resumen. Es evidencia investigada: sirve para respaldar un dolor, no para medir su intensidad del día. |
+
+Todas las fuentes y el porqué de cada una están en `Radar/Fuentes_Radar_Educacion_Superior_v1.md`.
 
 **Últimas ejecuciones:** registro de cada búsqueda, con las señales nuevas, las clasificadas y las
 fuentes que dieron error. Si una fuente falla, el error aparece en rojo en su fila.
@@ -340,6 +343,8 @@ fuentes que dieron error. Si una fuente falla, el error aparece en rojo en su fi
 - **Editar:** cambia la consulta, el país o la URL.
 - **Pausar / Activar:** la saca de la búsqueda automática sin borrarla.
 - **✕:** la elimina. Las señales que ya trajo se conservan.
+
+Debajo del nombre de cada fuente aparece una **nota** que explica para qué sirve.
 
 **Agregar fuente:** eliges el tipo y completas los datos.
 - **Google Noticias:**

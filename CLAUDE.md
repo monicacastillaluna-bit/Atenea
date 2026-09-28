@@ -90,6 +90,14 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   edición Colombia (`ATH-COL-PRD-0001`). Incluyen insumos del Cerebro por ID, requisitos de la
   ronda 2 (offline/imprimible/sin curva técnica), competencia, precio hipótesis y las ingestas al
   corpus que disparan. Pendiente: aprobación de Mónica (Compuerta 1) y contraste con panel.
+- `Radar/Fuentes_Radar_Educacion_Superior_v1.md` — investigación web (2026-09-28) de fuentes sobre dolores de
+  docentes universitarios en los 19 países: 16 feeds RSS (blogs, sindicatos, observatorios, revistas) y 5
+  búsquedas de Google Noticias agregadas a `atenea-app` como semilla v2 (`FUENTES_V2` en
+  `server/lib/semillas.js`, se aplica una vez a bases existentes), más fuentes manuales. Ampliación v3
+  (`FUENTES_V3`, aportes de Mónica): UNESCO IESALC, CLACSO, CRUE, OEI, ANUIES, sindicatos españoles,
+  FAPUV, Mineduc/Minedu y el tipo de fuente `openalex` (artículos académicos recientes en español de
+  los 19 países; cubre parte de SciELO/Redalyc/Dialnet). URL de feed por patrón estándar,
+  **pendientes de verificar con «Probar» en la app**.
 - `Radar/` contiene además la ronda 2 de investigación aportada por Mónica (2026-07-16):
   `Mapeo_Dolores_ronda2_proyeccion_encuesta.docx` (proyección de resultados de la encuesta) e
   `Investigacion_Comparada_4paises_5niveles.docx` (24 fuentes, 4 países × 5 niveles). Integradas
