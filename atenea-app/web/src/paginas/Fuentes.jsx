@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Cabecera, Carga, Modal, SelectorPais, api, fechaHora, nombrePais, numero, useAccion, useCatalogo, useDatos } from '../comun.jsx';
 
-const TIPOS = { google_news: 'Google Noticias', reddit: 'Reddit', rss: 'RSS / Atom' };
+const TIPOS = { google_news: 'Google Noticias', reddit: 'Reddit', rss: 'RSS / Atom', openalex: 'Artículos académicos (OpenAlex)' };
 
 function Editor({ fuente, onCerrar, onGuardado }) {
   const nuevo = !fuente.id;
@@ -10,6 +10,7 @@ function Editor({ fuente, onCerrar, onGuardado }) {
   const guardar = () => {
     const config = f.tipo === 'rss' ? { url: f.url, pais: f.pais || undefined, nota: f.nota || undefined }
       : f.tipo === 'reddit' ? { consulta: f.consulta, subreddit: f.subreddit || undefined, pais: f.pais || undefined, nota: f.nota || undefined }
+        : f.tipo === 'openalex' ? { consulta: f.consulta, desde_dias: Number(f.desde_dias) || undefined, pais: f.pais || undefined, nota: f.nota || undefined }
         : { consulta: f.consulta, pais: f.pais || undefined, gl: f.gl || undefined, nota: f.nota || undefined };
     const cuerpo = { tipo: f.tipo, nombre: f.nombre, config };
     return ejecutar(() => (nuevo ? api('/fuentes', { metodo: 'POST', cuerpo }) : api(`/fuentes/${fuente.id}`, { metodo: 'PATCH', cuerpo })),
@@ -33,12 +34,15 @@ function Editor({ fuente, onCerrar, onGuardado }) {
             <input className="campo" value={f.consulta ?? ''} onChange={(e) => setF({ ...f, consulta: e.target.value })} />
             <span className="tenue">{f.tipo === 'google_news'
               ? 'Admite comillas, OR y when:30d (antigüedad máxima).'
-              : 'Búsqueda de Reddit; deja «subreddit» vacío para buscar en todo Reddit.'}</span>
+              : f.tipo === 'openalex'
+                ? 'Admite comillas, OR y paréntesis. Busca artículos en español de autores de los 19 países (incluye revistas de SciELO, Redalyc y Dialnet con DOI).'
+                : 'Búsqueda de Reddit; deja «subreddit» vacío para buscar en todo Reddit.'}</span>
           </label>
         )}
         <div className="rejilla r2">
           <label className="lbl">País que se asigna a lo capturado (opcional)<SelectorPais valor={f.pais} onCambio={(v) => setF({ ...f, pais: v })} vacio="Que lo detecte la IA" /></label>
           {f.tipo === 'reddit' && <label className="lbl">Subreddit<input className="campo" value={f.subreddit ?? ''} onChange={(e) => setF({ ...f, subreddit: e.target.value })} placeholder="mexico" /></label>}
+          {f.tipo === 'openalex' && <label className="lbl">Antigüedad máxima (días)<input className="campo" type="number" min="30" value={f.desde_dias ?? ''} onChange={(e) => setF({ ...f, desde_dias: e.target.value })} placeholder="365" /></label>}
           {f.tipo === 'google_news' && <label className="lbl">Edición de Google Noticias (código de 2 letras, opcional)<input className="campo" value={f.gl ?? ''} onChange={(e) => setF({ ...f, gl: e.target.value.toUpperCase() })} placeholder="CO, MX, ES…" /></label>}
         </div>
         <label className="lbl">Nota (para qué sirve esta fuente)<input className="campo" value={f.nota ?? ''} onChange={(e) => setF({ ...f, nota: e.target.value })} /></label>
@@ -94,7 +98,7 @@ export default function Fuentes() {
         <button className="boton primario" disabled={ocupado} onClick={() => correr()}>{ocupado ? 'Recolectando…' : 'Recolectar todas ahora'}</button>
       </>}>
         La recolección corre sola cada cierto número de horas mientras la app está abierta (se configura en Ajustes).
-        Fuentes públicas: Google Noticias (por país y por tema), Reddit y cualquier feed RSS que agregues (blogs, revistas, portales universitarios).
+        Fuentes públicas: Google Noticias (por país y por tema), Reddit, feeds RSS (blogs, sindicatos, organismos, revistas) y artículos académicos recientes vía OpenAlex.
       </Cabecera>
 
       <Carga estado={rec}>{(r) => (

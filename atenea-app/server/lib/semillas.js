@@ -163,6 +163,26 @@ export const FUENTES_V2 = [
   ['google_news', 'Perú · Docentes universitarios y Ley Universitaria', { consulta: '"docentes universitarios" (SUNEDU OR "Ley Universitaria" OR contratados) when:60d', pais: 'PER', gl: 'PE' }],
 ];
 
+// Fuentes v3: organismos, sindicatos y literatura académica sugeridos por Mónica (2026-09-28).
+// Los organismos sin feed (OEI, ANUIES, ministerios, sindicatos españoles, FAPUV) se siguen por
+// Google Noticias; los artículos de Redalyc, SciELO y Dialnet, por OpenAlex, que los indexa por DOI.
+export const FUENTES_V3 = [
+  ['rss', 'Organismo · UNESCO IESALC', { url: 'https://www.iesalc.unesco.org/feed/', nota: 'Instituto de UNESCO para la educación superior en América Latina y el Caribe: informes, docencia, IA.' }],
+  ['rss', 'Organismo · CLACSO', { url: 'https://www.clacso.org/feed/', nota: 'Consejo Latinoamericano de Ciencias Sociales. Publica mucho fuera del tema: pausar si solo trae ruido.' }],
+  ['rss', 'Organismo · CRUE Universidades Españolas', { url: 'https://www.crue.org/feed/', pais: 'ESP', nota: 'Conferencia de rectores: informes como «La Universidad Española en Cifras».' }],
+  ['google_news', 'Organismo · OEI y educación superior', { consulta: 'OEI ("educación superior" OR universidades) (docentes OR profesores) when:60d', nota: 'Organización de Estados Iberoamericanos: programas y estudios sobre docencia universitaria.' }],
+  ['google_news', 'México · ANUIES', { consulta: 'ANUIES (docentes OR profesores OR académicos) when:60d', pais: 'MEX', gl: 'MX', nota: 'Asociación Nacional de Universidades e Instituciones de Educación Superior.' }],
+  ['google_news', 'España · Sindicatos del profesorado universitario (CCOO, UGT, CSIF)', { consulta: '(CCOO OR UGT OR CSIF) ("profesorado universitario" OR PDI OR "profesores asociados" OR universidades) when:60d', pais: 'ESP', gl: 'ES', nota: 'Secciones universitarias de CCOO, UGT y CSIF: reclamos, plantillas, LOSU.' }],
+  ['google_news', 'España · Ministerio de Universidades y LOSU', { consulta: '(LOSU OR "Ministerio de Ciencia, Innovación y Universidades") (profesorado OR PDI OR "carrera académica") when:60d', pais: 'ESP', gl: 'ES', nota: 'Política universitaria que afecta al profesorado (LOSU, plantillas, acreditación).' }],
+  ['google_news', 'Venezuela · FAPUV y profesores universitarios', { consulta: 'FAPUV OR ("profesores universitarios" Venezuela) when:60d', pais: 'VEN', gl: 'VE', nota: 'Federación de Asociaciones de Profesores Universitarios de Venezuela: paros y salarios.' }],
+  ['google_news', 'Chile · Mineduc y académicos', { consulta: '("Subsecretaría de Educación Superior" OR Mineduc) (académicos OR "docentes universitarios") when:60d', pais: 'CHL', gl: 'CL', nota: 'Política de educación superior del Mineduc que afecta a los académicos.' }],
+  ['google_news', 'Perú · Minedu y docentes universitarios', { consulta: 'Minedu ("docentes universitarios" OR "universidades públicas") when:60d', pais: 'PER', gl: 'PE', nota: 'Política universitaria del Minedu (presupuesto, docentes contratados, carrera).' }],
+  ['openalex', 'Literatura · Burnout en docentes universitarios', { consulta: 'burnout ("docentes universitarios" OR "profesores universitarios")', nota: 'Artículos académicos recientes (Redalyc, SciELO, Dialnet y otros) sobre síndrome de burnout.' }],
+  ['openalex', 'Literatura · Precarización laboral en educación superior', { consulta: '"precarización laboral" ("educación superior" OR universidad OR universitarios)', nota: 'Artículos académicos recientes sobre precariedad del profesorado.' }],
+  ['openalex', 'Literatura · Satisfacción laboral de profesores universitarios', { consulta: '"satisfacción laboral" ("profesores universitarios" OR "docentes universitarios")', nota: 'Artículos académicos recientes sobre satisfacción y condiciones laborales.' }],
+  ['openalex', 'Literatura · Desafíos de la profesión docente universitaria', { consulta: '"profesión docente" (desafíos OR retos) (universidad OR universitaria OR "educación superior")', nota: 'Artículos académicos recientes sobre los retos de la profesión docente.' }],
+];
+
 export const AJUSTES_INICIALES = {
   ia_proveedor: 'claude',
   ia_modelo_claude: 'claude-opus-5',
@@ -173,6 +193,17 @@ export const AJUSTES_INICIALES = {
   vida_media_dias: 60,
   lote_clasificacion: 8,
 };
+
+function sembrarFuentes(db, bandera, fuentes) {
+  if (db.prepare('SELECT 1 FROM ajustes WHERE clave = ?').get(bandera)) return;
+  const existentes = new Set(db.prepare('SELECT config FROM fuentes').all()
+    .map((r) => { const c = JSON.parse(r.config); return c.url ?? c.consulta; }));
+  const ins = db.prepare('INSERT INTO fuentes (tipo, nombre, config) VALUES (?, ?, ?)');
+  for (const [tipo, nombre, config] of fuentes) {
+    if (!existentes.has(config.url ?? config.consulta)) ins.run(tipo, nombre, JSON.stringify(config));
+  }
+  db.prepare("INSERT OR IGNORE INTO ajustes (clave, valor) VALUES (?, 'true')").run(bandera);
+}
 
 export function sembrar(db) {
   const vacia = (t) => db.prepare(`SELECT COUNT(*) AS n FROM ${t}`).get().n === 0;
@@ -213,16 +244,9 @@ export function sembrar(db) {
     db.prepare('INSERT INTO bitacora (ficha_id, fecha, tipo, texto) VALUES (?, ?, ?, ?)')
       .run(r.lastInsertRowid, t, 'nota', 'Importado a la app desde la bitácora del repo. Pendiente: veredicto de Compuerta 3.');
   }
-  // Fuentes v2: se agregan una sola vez, también a instalaciones existentes, sin duplicar lo que ya esté.
-  if (!db.prepare("SELECT 1 FROM ajustes WHERE clave = 'semilla_fuentes_v2'").get()) {
-    const existentes = new Set(db.prepare('SELECT config FROM fuentes').all()
-      .map((r) => { const c = JSON.parse(r.config); return c.url ?? c.consulta; }));
-    const ins = db.prepare('INSERT INTO fuentes (tipo, nombre, config) VALUES (?, ?, ?)');
-    for (const [tipo, nombre, config] of FUENTES_V2) {
-      if (!existentes.has(config.url ?? config.consulta)) ins.run(tipo, nombre, JSON.stringify(config));
-    }
-    db.prepare("INSERT OR IGNORE INTO ajustes (clave, valor) VALUES ('semilla_fuentes_v2', 'true')").run();
-  }
+  // Fuentes v2 y v3: se agregan una sola vez, también a instalaciones existentes, sin duplicar lo que ya esté.
+  sembrarFuentes(db, 'semilla_fuentes_v2', FUENTES_V2);
+  sembrarFuentes(db, 'semilla_fuentes_v3', FUENTES_V3);
   const st = db.prepare('INSERT OR IGNORE INTO ajustes (clave, valor) VALUES (?, ?)');
   for (const [k, v] of Object.entries(AJUSTES_INICIALES)) st.run(k, JSON.stringify(v));
   st.run('semilla_fichas_v1', 'true');

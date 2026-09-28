@@ -2,6 +2,8 @@
 
 **Fecha:** 2026-09-28 · **Alcance:** dolores y necesidades de docentes universitarios en los 19
 países del Radar (17 de Latinoamérica y el Caribe, más México y España).
+**Actualización v3 (misma fecha):** organismos, sindicatos y literatura académica aportados por
+Mónica (sección 3).
 **Uso:** complementa las fuentes iniciales de `atenea-app`, que eran Google Noticias por país y por
 tema, más Reddit.
 
@@ -70,7 +72,62 @@ Cubren países y temas sin un sitio especializado con feed:
 | «Profesores de asignatura» | México | Figura contractual típica de la precariedad en México |
 | Docentes universitarios + SUNEDU / Ley Universitaria | Perú | Exigencias de grados de la [Ley 30220](https://especial.larepublica.pe/apunte-educativo/desarrollo-profesional/2026/07/10/sueldo-de-docente-universitario-en-peru-cuanto-ganan-518539) y situación de los contratados |
 
-## 3. Fuentes valiosas que NO se pueden automatizar
+## 3. Ampliación v3: organismos, sindicatos y literatura (aportes de Mónica, 2026-09-28)
+
+### Automatizadas
+
+| Fuente | Cómo entra | País | Qué aporta |
+|---|---|---|---|
+| [UNESCO IESALC](https://www.iesalc.unesco.org/) | RSS `https://www.iesalc.unesco.org/feed/` | Regional | Informes y noticias sobre educación superior, docencia e IA |
+| [CLACSO](https://www.clacso.org/) | RSS `https://www.clacso.org/feed/` | Regional | Ciencias sociales en general: **puede traer mucho ruido**; pausarla si no aporta tras 2-3 semanas |
+| [CRUE Universidades Españolas](https://www.crue.org/) | RSS `https://www.crue.org/feed/` | España | Comunicados e informes de la conferencia de rectores |
+| [OEI](https://oei.int/) | Google Noticias | Regional | Programas y estudios sobre educación superior (el sitio no publica feed) |
+| [ANUIES](https://www.anuies.mx/) | Google Noticias | México | Posiciones y programas de la asociación de universidades (su revista ya estaba en v2) |
+| CCOO, UGT y CSIF (secciones universitarias) | Google Noticias | España | Reclamos del profesorado: plantillas, asociados, LOSU |
+| Ministerio de Ciencia, Innovación y Universidades / LOSU | Google Noticias | España | Política que afecta al PDI |
+| FAPUV | Google Noticias | Venezuela | Paros y salarios (en 2026 la federación denunció [paros de profesores universitarios](https://www.eldiario.com/2026/04/20/paro-profesores-universitarios-venezuela/) por la pérdida de poder adquisitivo) |
+| Mineduc (Subsecretaría de Educación Superior) | Google Noticias | Chile | Política de educación superior que afecta a los académicos |
+| Minedu | Google Noticias | Perú | Presupuesto universitario, docentes contratados |
+| CONADU | RSS (ya estaba en v2) | Argentina | — |
+
+**Literatura académica: nuevo tipo de fuente «Artículos académicos (OpenAlex)».** Redalyc, SciELO y
+Dialnet no ofrecen una API de búsqueda abierta y estable para recolectar automáticamente. En cambio,
+[OpenAlex](https://developers.openalex.org/) es un índice abierto y gratuito que incluye muchas de
+sus revistas (las que tienen DOI). La app consulta su API
+([documentación](https://github.com/ourresearch/openalex-docs)) con estos filtros:
+- artículos en español;
+- con al menos un autor de una institución de los 19 países;
+- publicados en el último año (se cambia en *Editar → Antigüedad máxima*).
+
+Las 4 búsquedas sembradas usan tus términos:
+
+| Búsqueda en la app | Tu término |
+|---|---|
+| `burnout ("docentes universitarios" OR "profesores universitarios")` | «síndrome de burnout en docentes universitarios» |
+| `"precarización laboral" ("educación superior" OR universidad OR universitarios)` | «precarización laboral educación superior» |
+| `"satisfacción laboral" ("profesores universitarios" OR "docentes universitarios")` | «satisfacción laboral profesores universitarios» |
+| `"profesión docente" (desafíos OR retos) (universidad OR universitaria OR "educación superior")` | «desafíos de la profesión docente» |
+
+Cada artículo entra como señal con su título y resumen. El país se asigna solo cuando todos los
+autores son de un mismo país; si no, lo decide la IA. **Cómo leer estas señales:** son evidencia
+investigada (sirven como respaldo citable en fichas y en copy), no pulso del día. Conviene validarlas
+con intensidad moderada, salvo que el artículo reporte cifras fuertes. Si en algún momento OpenAlex
+pide clave, se crea gratis en su sitio y se pone en el `.env` como `OPENALEX_API_KEY=...`.
+
+### Manuales (sin feed ni API; consulta periódica)
+
+- **CRUE, [«La Universidad Española en Cifras»](https://www.crue.org/wp-content/uploads/2020/02/UEC_2023-2024.pdf)**
+  y la **Estadística de Personal de las Universidades** del Ministerio de Ciencia, Innovación y
+  Universidades: cifras de PDI por categoría, edad, sexo y temporalidad. Útiles para dimensionar el
+  mercado en España y para citar en fichas.
+- **Diagnósticos del Minedu (Perú) y del Mineduc (Chile)** sobre docentes de educación superior:
+  se registran como normativa o como señal a mano cuando se publiquen.
+- **Dialnet, Redalyc y SciELO directamente**, con los mismos 4 términos, para lo que OpenAlex no
+  cubra (revistas sin DOI). Una revisión trimestral basta.
+- **Informes de UNESCO IESALC, OEI y CLACSO** en PDF: las señales automáticas avisan que salieron;
+  las cifras se registran a mano.
+
+## 4. Fuentes valiosas que NO se pueden automatizar
 
 Estas fuentes no tienen feed, o sus condiciones de uso no permiten recolectarlas automáticamente.
 Úsalas con **Registrar señal a mano** o como insumo del panel:
@@ -87,9 +144,10 @@ Estas fuentes no tienen feed, o sus condiciones de uso no permiten recolectarlas
 - **Encuesta del panel y entrevistas** (instrumentos del Radar ya diseñados), que son la evidencia de
   mayor calidad.
 
-## 4. Pendiente
+## 5. Pendiente
 
-- [ ] Probar en la app cada fuente nueva y pausar las que fallen. Anotar aquí las URL corregidas.
+- [ ] Probar en la app cada fuente nueva (v2 y v3, incluidas las 4 de OpenAlex) y pausar las que
+      fallen. Anotar aquí las URL corregidas.
 - [ ] Tras 2-3 semanas, revisar qué fuentes aportan señales relevantes (columna «Capturadas» y
       filtro por fuente en *Señales*) y pausar las que solo traen ruido.
 - [ ] Buscar fuentes con feed para los países con menos cobertura: Bolivia, Paraguay, Uruguay,

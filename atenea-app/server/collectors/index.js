@@ -77,6 +77,48 @@ export function urlReddit({ consulta, subreddit }) {
     : `https://www.reddit.com/search.json?q=${q}&sort=new&t=year&limit=50`;
 }
 
+// OpenAlex (api.openalex.org): índice abierto de artículos académicos, que incluye muchas revistas
+// de SciELO, Redalyc y Dialnet con DOI. Se limita a artículos en español con al menos una
+// institución de los 19 países del Radar.
+const ISO2_A_ISO3 = {
+  MX: 'MEX', GT: 'GTM', SV: 'SLV', HN: 'HND', NI: 'NIC', CR: 'CRI', PA: 'PAN', CU: 'CUB', DO: 'DOM', CO: 'COL',
+  VE: 'VEN', EC: 'ECU', PE: 'PER', BO: 'BOL', CL: 'CHL', AR: 'ARG', UY: 'URY', PY: 'PRY', ES: 'ESP',
+};
+
+export function urlOpenAlex({ consulta, desde_dias: dias = 365 }, hoy = new Date()) {
+  const desde = new Date(hoy.getTime() - dias * 86400000).toISOString().slice(0, 10);
+  const paises = Object.keys(ISO2_A_ISO3).join('|');
+  const filtro = `from_publication_date:${desde},language:es,authorships.institutions.country_code:${paises}`;
+  const clave = process.env.OPENALEX_API_KEY ? `&api_key=${encodeURIComponent(process.env.OPENALEX_API_KEY)}` : '';
+  return `https://api.openalex.org/works?search=${encodeURIComponent(consulta)}&filter=${filtro}`
+    + `&sort=publication_date:desc&per-page=50${clave}`;
+}
+
+// El resumen llega como índice invertido { palabra: [posiciones] }.
+export function resumenOpenAlex(indice) {
+  if (!indice) return '';
+  const palabras = [];
+  for (const [p, posiciones] of Object.entries(indice)) for (const i of posiciones) palabras[i] = p;
+  return palabras.filter(Boolean).join(' ');
+}
+
+export function parsearOpenAlex(json, { pais = null } = {}) {
+  return lista(json?.results).map((w) => {
+    const paises = new Set(lista(w.authorships).flatMap((a) => lista(a.institutions))
+      .map((i) => ISO2_A_ISO3[i?.country_code]).filter(Boolean));
+    const loc = w.primary_location ?? {};
+    return {
+      url: w.doi || loc.landing_page_url || w.id || '',
+      titulo: limpiarHtml(w.title ?? w.display_name ?? ''),
+      texto: recortar(limpiarHtml(resumenOpenAlex(w.abstract_inverted_index))),
+      autor: lista(w.authorships)[0]?.author?.display_name ?? null,
+      medio: loc.source?.display_name ?? 'OpenAlex',
+      publicado_en: fechaIso(w.publication_date),
+      pais: pais ?? (paises.size === 1 ? [...paises][0] : null),
+    };
+  }).filter((i) => i.url && i.titulo);
+}
+
 // Ejecuta una fuente configurada y devuelve sus ítems.
 export async function recolectar(fuente) {
   const c = fuente.config ?? {};
@@ -88,6 +130,9 @@ export async function recolectar(fuente) {
     case 'rss':
       if (!c.url) throw new Error('La fuente RSS no tiene URL');
       return parsearFeed(await descargar(c.url), { pais: c.pais ?? null });
+    case 'openalex':
+      if (!c.consulta) throw new Error('La fuente OpenAlex no tiene búsqueda');
+      return parsearOpenAlex(await descargar(urlOpenAlex(c), { json: true }), { pais: c.pais ?? null });
     default:
       throw new Error(`Tipo de fuente desconocido: ${fuente.tipo}`);
   }
