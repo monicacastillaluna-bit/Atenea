@@ -4,6 +4,7 @@ import {
   fechaHora, nombrePais, numero, useAccion, useCatalogo, useDatos,
 } from '../comun.jsx';
 import { ir } from '../ruta.js';
+import Produccion from './Produccion.jsx';
 
 const CAMPOS_TEXTO = [
   ['problema', 'Problema que resuelve'], ['publico', 'Público'], ['formato', 'Formato'],
@@ -138,6 +139,7 @@ function Detalle({ id }) {
   const [nota, setNota] = useState('');
   const [comp, setComp] = useState({ veredicto: 'aprobada', texto: '' });
   const [comercial, setComercial] = useState(null);
+  const [pestana, setPestana] = useState('ficha');
   const [ejecutar, ocupado] = useAccion();
 
   return (
@@ -160,6 +162,11 @@ function Detalle({ id }) {
             {FLUJO_FICHA.map((e, i) => <span key={e} className={`paso ${e === f.estado ? 'actual' : idx >= 0 && i < idx ? 'hecho' : ''}`}>{ESTADOS_FICHA[e]}</span>)}
             {!FLUJO_FICHA.includes(f.estado) && <span className="paso actual">{ESTADOS_FICHA[f.estado]}</span>}
           </div>
+          <div className="pestanas" style={{ marginBottom: 0 }}>
+            <button className={`pestana ${pestana === 'ficha' ? 'activa' : ''}`} onClick={() => setPestana('ficha')}>Ficha</button>
+            <button className={`pestana ${pestana === 'produccion' ? 'activa' : ''}`} onClick={() => setPestana('produccion')}>Producción</button>
+          </div>
+          {pestana === 'produccion' ? <Produccion ficha={f} onCambioFicha={d.recargar} /> : (
           <div className="rejilla" style={{ gridTemplateColumns: 'minmax(0, 2fr) minmax(280px, 1fr)' }}>
             <div className="tarjeta">
               {f.dolor_codigo && <div style={{ marginBottom: 10 }}><ChipDolor codigo={f.dolor_codigo} /></div>}
@@ -218,6 +225,7 @@ function Detalle({ id }) {
                 && ejecutar(() => api(`/fichas/${f.id}`, { metodo: 'DELETE' }), 'Ficha eliminada').then(() => ir('fabrica'))}>Eliminar ficha</button>
             </div>
           </div>
+          )}
           {editar && <EditorContenido ficha={f} onCerrar={() => setEditar(false)} onGuardado={() => { setEditar(false); d.recargar(); }} />}
         </div>
       );

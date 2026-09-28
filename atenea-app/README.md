@@ -15,7 +15,7 @@ simulados y enfocada en educación básica.
 |---|---|
 | **Radar** | Recolecta señales de Google Noticias (una consulta por país y cinco temáticas), Reddit y cualquier feed RSS. Clasifica cada señal según la taxonomía ES01-ES09 y calcula la **matriz de saliencia** dolor × país. |
 | **Cerebro** | Normativa de educación superior por país (la semilla inicial está **por verificar**). Además, las 15 skills de producción, que se leen de `agents/skills/`. |
-| **Fábrica** | Convierte un dolor priorizado en una ficha de producto. La IA propone la ficha citando señales y normativa por su ID; tú registras las 3 compuertas y la bitácora; al aprobar la Compuerta 1 se asigna el código `ATH-{PAIS}-PRD-NNNN`. La ficha se puede exportar a Markdown. |
+| **Fábrica** | Convierte un dolor priorizado en una ficha de producto. La IA propone la ficha citando señales y normativa por su ID; tú registras las 3 compuertas y la bitácora; al aprobar la Compuerta 1 se asigna el código `ATH-{PAIS}-PRD-NNNN`. La ficha se puede exportar a Markdown. Después de la Compuerta 1, la pestaña **Producción** **elabora cada pieza con IA** (skill de producción + voz de Atenea + evidencia + normativa); tú la revisas, pides versiones nuevas y la apruebas; se descarga en Word o PowerPoint con la identidad Atenea, o el kit completo en un ZIP. |
 | **Canal** | Ventas manuales o importadas del CSV de Hotmart. Cada venta suma a la saliencia de su dolor y país, lo que cierra el circuito comprador → Radar. |
 
 ## Instalación (Windows, una sola vez)

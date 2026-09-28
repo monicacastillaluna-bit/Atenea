@@ -36,6 +36,8 @@ const servidor = app.listen(puerto, '127.0.0.1', (err) => {
     exec(cmd);
   }
 });
+// Recolectar o elaborar una pieza larga puede pasar de 5 minutos (límite por defecto de Node).
+servidor.requestTimeout = 30 * 60e3;
 servidor.on('error', (e) => {
   console.error(e.code === 'EADDRINUSE'
     ? `El puerto ${puerto} ya está en uso: probablemente Atenea (u otra versión) ya está abierta. Cierra esa ventana negra e inténtalo de nuevo.`
