@@ -30,10 +30,18 @@ export async function descargar(url, { timeoutMs = 20000, json = false } = {}) {
   const ctrl = new AbortController();
   const t = setTimeout(() => ctrl.abort(), timeoutMs);
   try {
-    const r = await fetch(url, {
-      signal: ctrl.signal,
-      headers: { 'User-Agent': 'AteneaRadar/1.0 (uso interno; investigación de necesidades docentes)' },
-    });
+    let r;
+    try {
+      r = await fetch(url, {
+        signal: ctrl.signal,
+        headers: { 'User-Agent': 'AteneaRadar/1.0 (uso interno; investigación de necesidades docentes)' },
+      });
+    } catch (e) {
+      // «fetch failed» no dice nada: se muestra la causa (sitio inexistente, certificado, tiempo agotado…).
+      const host = new URL(url).host;
+      const causa = e.name === 'AbortError' ? 'tardó demasiado en responder' : (e.cause?.code || e.cause?.message || e.message);
+      throw new Error(`No se pudo conectar con ${host} (${causa})`, { cause: e });
+    }
     if (!r.ok) throw new Error(`HTTP ${r.status} en ${new URL(url).host}`);
     return json ? r.json() : r.text();
   } finally {
