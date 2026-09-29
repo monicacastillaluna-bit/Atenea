@@ -146,8 +146,15 @@ Estas fuentes no tienen feed, o sus condiciones de uso no permiten recolectarlas
 
 ## 5. Pendiente
 
-- [ ] Probar en la app cada fuente nueva (v2 y v3, incluidas las 4 de OpenAlex) y pausar las que
-      fallen. Anotar aquí las URL corregidas.
+- [x] Probar en la app cada fuente nueva (v2 y v3). Resultado del 2026-09-29, verificado por Mónica:
+  - **UNESCO IESALC**: el feed dio HTTP 404, porque su sitio no es WordPress. Se reemplazó por una
+    búsqueda de Google Noticias.
+  - **REDU**: el feed no conecta («fetch failed»). Se retiró, porque sus artículos llegan por OpenAlex
+    (tiene DOI y está en Dialnet y DOAJ).
+  - Las demás fuentes funcionaron en la prueba.
+  - Las dos correcciones se aplican solas al actualizar la app (`semilla_fuentes_v4`).
+  - Reddit: sus fuentes dan HTTP 403 (bloqueo de Reddit a consultas sin cuenta). Desde la
+    versión 1.4.0 la app intenta su feed RSS; si también falla, quedan pausadas.
 - [ ] Tras 2-3 semanas, revisar qué fuentes aportan señales relevantes (columna «Capturadas» y
       filtro por fuente en *Señales*) y pausar las que solo traen ruido.
 - [ ] Buscar fuentes con feed para los países con menos cobertura: Bolivia, Paraguay, Uruguay,

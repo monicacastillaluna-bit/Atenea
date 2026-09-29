@@ -100,7 +100,7 @@ Abajo, en el menú, siempre ves cuatro datos:
 - qué IA está activa y si tiene clave;
 - cuándo fue la última recolección;
 - si la copia en Firestore está configurada;
-- la **versión de la app** (por ejemplo, 1.4.0). Sirve para confirmar que una actualización quedó
+- la **versión de la app** (por ejemplo, 1.4.1). Sirve para confirmar que una actualización quedó
   aplicada.
 
 **Los avisos** aparecen abajo a la derecha: **azules** si algo salió bien, **rojos** si hubo un
@@ -331,7 +331,7 @@ Son los lugares donde el Radar busca:
 |---|---|---|
 | **Google Noticias** | Una búsqueda por país, más búsquedas por tema y por organismo (OEI, ANUIES, sindicatos españoles, FAPUV, Mineduc, Minedu…). | Trae **titulares**, no el artículo completo. |
 | **Reddit** | Publicaciones de foros. | Trae el texto completo. Reddit bloquea a menudo las consultas sin cuenta: si sus fuentes marcan «HTTP 403», páusalas; el resto del Radar sigue funcionando. |
-| **RSS** | Blogs especializados, sindicatos de docentes universitarios, observatorios, organismos (UNESCO IESALC, CLACSO, CRUE) y revistas académicas. La app ya trae 19, y puedes agregar más. | Trae el texto que publique cada sitio. |
+| **RSS** | Blogs especializados, sindicatos de docentes universitarios, observatorios, organismos (CLACSO, CRUE) y revistas académicas. La app ya trae 17, y puedes agregar más. | Trae el texto que publique cada sitio. |
 | **Artículos académicos (OpenAlex)** | Artículos recientes en español, de autores de los 19 países, sobre burnout, precarización, satisfacción laboral y desafíos de la profesión docente. Incluye muchas revistas de SciELO, Redalyc y Dialnet. | Trae el título y el resumen. Es evidencia investigada: sirve para respaldar un dolor, no para medir su intensidad del día. |
 
 Todas las fuentes y el porqué de cada una están en `Radar/Fuentes_Radar_Educacion_Superior_v1.md`.
@@ -697,6 +697,7 @@ Si al abrir la versión nueva la app vieja seguía abierta, la nueva la cierra s
 | **El navegador no se abre.** | Busca en la barra de tareas la ventana «Atenea - Centro de mando» y ábrela. Si muestra un error, cópialo. Si dice «Atenea lista», entra a `http://localhost:5180`. |
 | **«El puerto 5180 ya está en uso».** | Hay otra ventana de Atenea abierta, quizá de una versión anterior. Ciérrala y vuelve a abrir la app. |
 | **«Hay otra versión de Atenea abierta».** | Cierra la ventana negra vieja (minimizada en la barra de tareas) y abre la nueva con `Iniciar Atenea.bat` de la carpeta nueva. |
+| **Una fuente da «HTTP 404» o «No se pudo conectar con…».** | La dirección de esa fuente cambió o el sitio no responde. Pausa la fuente y avisa para buscar la dirección correcta. El resto del Radar sigue funcionando. |
 | **Actualicé, pero no veo las novedades** (por ejemplo, fuentes nuevas). | Mira la versión abajo, en el menú. Si no es la nueva, cierra todas las ventanas negras de Atenea y abre `Iniciar Atenea.bat` **desde la carpeta nueva**, no desde un ícono viejo. |
 | **«No encuentro Node.js».** | Instala Node.js (versión LTS) desde nodejs.org. |
 | **«No encuentro los archivos de la app».** | Abriste el iniciador desde dentro del ZIP. Descomprime primero con **Extraer todo**. |

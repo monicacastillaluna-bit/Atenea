@@ -315,3 +315,26 @@ test('Reddit: si la API JSON da 403, usa el feed RSS; si también falla, explica
   rssOk = false;
   await assert.rejects(recolectar(fuente), /Pausa esta fuente/);
 });
+
+test('fuentes v4: retira los feeds que fallaron (si no capturaron nada) y agrega IESALC por Google Noticias', async () => {
+  const { sembrar } = await import('../server/lib/semillas.js');
+  const db = nuevaDb();
+  const ins = db.prepare("INSERT INTO fuentes (tipo, nombre, config, total_items) VALUES ('rss', ?, ?, ?)");
+  ins.run('IESALC viejo', JSON.stringify({ url: 'https://www.iesalc.unesco.org/feed/' }), 0);
+  ins.run('REDU con datos', JSON.stringify({ url: 'https://polipapers.upv.es/index.php/REDU/gateway/plugin/WebFeedGatewayPlugin/rss2' }), 3);
+  db.exec("DELETE FROM fuentes WHERE nombre = 'Organismo · UNESCO IESALC'");
+  db.exec("DELETE FROM ajustes WHERE clave = 'semilla_fuentes_v4'");
+  sembrar(db);
+  const nombres = db.prepare('SELECT nombre, tipo FROM fuentes').all().map((r) => `${r.tipo}:${r.nombre}`);
+  assert.ok(!nombres.includes('rss:IESALC viejo'));
+  assert.ok(nombres.includes('rss:REDU con datos'), 'no borra lo que ya capturó');
+  assert.ok(nombres.includes('google_news:Organismo · UNESCO IESALC'));
+  sembrar(db);
+  assert.equal(db.prepare("SELECT COUNT(*) n FROM fuentes WHERE nombre = 'Organismo · UNESCO IESALC'").get().n, 1);
+});
+
+test('descargar: un fallo de conexión dice el sitio y la causa', async (t) => {
+  const { descargar } = await import('../server/lib/texto.js');
+  t.mock.method(globalThis, 'fetch', async () => { throw new TypeError('fetch failed', { cause: { code: 'ENOTFOUND' } }); });
+  await assert.rejects(descargar('https://no-existe.example/feed/'), /No se pudo conectar con no-existe\.example \(ENOTFOUND\)/);
+});

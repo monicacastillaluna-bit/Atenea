@@ -154,7 +154,6 @@ export const FUENTES_V2 = [
   ['rss', 'Observatorio DDHH · Universidad de Los Andes (Venezuela)', { url: 'https://www.uladdhh.org.ve/feed/', pais: 'VEN', nota: 'Reportes mensuales sobre la situación de las universidades y sus profesores.' }],
   ['rss', 'CSUCA · Red Comunica (Centroamérica y Rep. Dominicana)', { url: 'https://redcomunica.csuca.org/index.php/feed/', nota: 'Consejo Superior Universitario Centroamericano: carrera docente, financiamiento.' }],
   ['rss', 'Revista · RIES (UNAM-Universia)', { url: 'https://www.ries.universia.unam.mx/index.php/ries/gateway/plugin/WebFeedGatewayPlugin/rss2', nota: 'Investigación sobre educación superior iberoamericana (números nuevos).' }],
-  ['rss', 'Revista · REDU Docencia Universitaria (España)', { url: 'https://polipapers.upv.es/index.php/REDU/gateway/plugin/WebFeedGatewayPlugin/rss2', pais: 'ESP', nota: 'Investigación sobre docencia universitaria (números nuevos).' }],
   ['rss', 'Revista · Educación Superior ANUIES (México)', { url: 'https://resu.anuies.mx/ojs/index.php/resu/gateway/plugin/WebFeedGatewayPlugin/rss2', pais: 'MEX', nota: 'Revista de la ANUIES (números nuevos).' }],
   ['google_news', 'Tema · Paros y huelgas de docentes universitarios', { consulta: '("paro" OR "huelga") ("docentes universitarios" OR "profesores universitarios") when:30d', nota: 'Conflictos laborales: señal de intensidad alta.' }],
   ['google_news', 'Tema · Salud mental y agotamiento docente universitario', { consulta: '("docentes universitarios" OR "profesores universitarios") ("salud mental" OR agotamiento OR burnout OR estrés) when:60d' }],
@@ -167,9 +166,9 @@ export const FUENTES_V2 = [
 // Los organismos sin feed (OEI, ANUIES, ministerios, sindicatos españoles, FAPUV) se siguen por
 // Google Noticias; los artículos de Redalyc, SciELO y Dialnet, por OpenAlex, que los indexa por DOI.
 export const FUENTES_V3 = [
-  ['rss', 'Organismo · UNESCO IESALC', { url: 'https://www.iesalc.unesco.org/feed/', nota: 'Instituto de UNESCO para la educación superior en América Latina y el Caribe: informes, docencia, IA.' }],
   ['rss', 'Organismo · CLACSO', { url: 'https://www.clacso.org/feed/', nota: 'Consejo Latinoamericano de Ciencias Sociales. Publica mucho fuera del tema: pausar si solo trae ruido.' }],
   ['rss', 'Organismo · CRUE Universidades Españolas', { url: 'https://www.crue.org/feed/', pais: 'ESP', nota: 'Conferencia de rectores: informes como «La Universidad Española en Cifras».' }],
+  ['google_news', 'Organismo · UNESCO IESALC', { consulta: '(IESALC OR "UNESCO IESALC") when:60d', nota: 'Instituto de UNESCO para la educación superior en América Latina y el Caribe (su sitio no publica feed).' }],
   ['google_news', 'Organismo · OEI y educación superior', { consulta: 'OEI ("educación superior" OR universidades) (docentes OR profesores) when:60d', nota: 'Organización de Estados Iberoamericanos: programas y estudios sobre docencia universitaria.' }],
   ['google_news', 'México · ANUIES', { consulta: 'ANUIES (docentes OR profesores OR académicos) when:60d', pais: 'MEX', gl: 'MX', nota: 'Asociación Nacional de Universidades e Instituciones de Educación Superior.' }],
   ['google_news', 'España · Sindicatos del profesorado universitario (CCOO, UGT, CSIF)', { consulta: '(CCOO OR UGT OR CSIF) ("profesorado universitario" OR PDI OR "profesores asociados" OR universidades) when:60d', pais: 'ESP', gl: 'ES', nota: 'Secciones universitarias de CCOO, UGT y CSIF: reclamos, plantillas, LOSU.' }],
@@ -203,6 +202,20 @@ function sembrarFuentes(db, bandera, fuentes) {
     if (!existentes.has(config.url ?? config.consulta)) ins.run(tipo, nombre, JSON.stringify(config));
   }
   db.prepare("INSERT OR IGNORE INTO ajustes (clave, valor) VALUES (?, 'true')").run(bandera);
+}
+
+// Verificación en la app (2026-09-29): el feed de UNESCO IESALC da 404 (su sitio no es WordPress)
+// y el de REDU no conecta. IESALC pasa a Google Noticias; los artículos de REDU llegan por OpenAlex.
+// Solo se borran si nunca capturaron nada.
+const FEEDS_RETIRADOS = ['https://www.iesalc.unesco.org/feed/',
+  'https://polipapers.upv.es/index.php/REDU/gateway/plugin/WebFeedGatewayPlugin/rss2'];
+
+function corregirFuentesV4(db) {
+  if (db.prepare("SELECT 1 FROM ajustes WHERE clave = 'semilla_fuentes_v4'").get()) return;
+  for (const f of db.prepare("SELECT id, config, total_items FROM fuentes WHERE tipo = 'rss'").all()) {
+    if (FEEDS_RETIRADOS.includes(JSON.parse(f.config).url) && !f.total_items) db.prepare('DELETE FROM fuentes WHERE id = ?').run(f.id);
+  }
+  sembrarFuentes(db, 'semilla_fuentes_v4', FUENTES_V3.filter(([, nombre]) => nombre === 'Organismo · UNESCO IESALC'));
 }
 
 export function sembrar(db) {
@@ -247,6 +260,7 @@ export function sembrar(db) {
   // Fuentes v2 y v3: se agregan una sola vez, también a instalaciones existentes, sin duplicar lo que ya esté.
   sembrarFuentes(db, 'semilla_fuentes_v2', FUENTES_V2);
   sembrarFuentes(db, 'semilla_fuentes_v3', FUENTES_V3);
+  corregirFuentesV4(db);
   const st = db.prepare('INSERT OR IGNORE INTO ajustes (clave, valor) VALUES (?, ?)');
   for (const [k, v] of Object.entries(AJUSTES_INICIALES)) st.run(k, JSON.stringify(v));
   st.run('semilla_fichas_v1', 'true');
