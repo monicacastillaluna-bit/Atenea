@@ -8,7 +8,7 @@ import path from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { fileURLToPath } from 'node:url';
 import { abrirDb, fila } from '../server/lib/db.js';
-import { parsearFeed, parsearOpenAlex, parsearReddit, urlGoogleNews, urlOpenAlex } from '../server/collectors/index.js';
+import { parsearFeed, parsearOpenAlex, parsearReddit, recolectar, urlGoogleNews, urlOpenAlex } from '../server/collectors/index.js';
 import { clasificarPorReglas, clasificarPendientes } from '../server/lib/clasificador.js';
 import { ejecutarRecoleccion } from '../server/lib/recoleccion.js';
 import { calcularSaliencia } from '../server/lib/saliencia.js';
@@ -295,4 +295,23 @@ test('migración: una base con el tipo de fuente viejo admite OpenAlex sin perde
   assert.equal(db.prepare("SELECT fuente_id FROM senales WHERE url = 'u1'").get().fuente_id, null, 'la referencia sigue viva');
   db.close();
   fs.rmSync(dir, { recursive: true, force: true });
+});
+
+test('Reddit: si la API JSON da 403, usa el feed RSS; si también falla, explica qué hacer', async (t) => {
+  const pedidas = [];
+  let rssOk = true;
+  t.mock.method(globalThis, 'fetch', async (url) => {
+    pedidas.push(String(url));
+    if (String(url).includes('/search.json?') || !rssOk) return new Response('', { status: 403 });
+    return new Response(`<?xml version="1.0"?><feed xmlns="http://www.w3.org/2005/Atom"><title>r/mexico</title>
+      <entry><title>Soy profesor universitario y estoy agotado</title><link href="https://www.reddit.com/r/mexico/comments/x/"/>
+      <author><name>/u/profe</name></author><published>2026-09-20T10:00:00Z</published>
+      <content type="html">&lt;p&gt;Tres universidades y ninguna me da contrato&lt;/p&gt;</content></entry></feed>`);
+  });
+  const fuente = { tipo: 'reddit', config: { consulta: 'profesor universidad', subreddit: 'mexico', pais: 'MEX' } };
+  const [it] = await recolectar(fuente);
+  assert.match(pedidas[1], /\/r\/mexico\/search\.rss\?q=profesor/);
+  assert.deepEqual([it.titulo, it.texto, it.pais], ['Soy profesor universitario y estoy agotado', 'Tres universidades y ninguna me da contrato', 'MEX']);
+  rssOk = false;
+  await assert.rejects(recolectar(fuente), /Pausa esta fuente/);
 });

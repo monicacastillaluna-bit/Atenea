@@ -328,7 +328,7 @@ Son los lugares donde el Radar busca:
 | Tipo | Qué trae | Nota |
 |---|---|---|
 | **Google Noticias** | Una búsqueda por país, más búsquedas por tema y por organismo (OEI, ANUIES, sindicatos españoles, FAPUV, Mineduc, Minedu…). | Trae **titulares**, no el artículo completo. |
-| **Reddit** | Publicaciones de foros. | Trae el texto completo. |
+| **Reddit** | Publicaciones de foros. | Trae el texto completo. Reddit bloquea a menudo las consultas sin cuenta: si sus fuentes marcan «HTTP 403», páusalas; el resto del Radar sigue funcionando. |
 | **RSS** | Blogs especializados, sindicatos de docentes universitarios, observatorios, organismos (UNESCO IESALC, CLACSO, CRUE) y revistas académicas. La app ya trae 19, y puedes agregar más. | Trae el texto que publique cada sitio. |
 | **Artículos académicos (OpenAlex)** | Artículos recientes en español, de autores de los 19 países, sobre burnout, precarización, satisfacción laboral y desafíos de la profesión docente. Incluye muchas revistas de SciELO, Redalyc y Dialnet. | Trae el título y el resumen. Es evidencia investigada: sirve para respaldar un dolor, no para medir su intensidad del día. |
 
