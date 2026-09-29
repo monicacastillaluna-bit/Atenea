@@ -17,7 +17,13 @@ import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
 import { estadoIA, ErrorIA, probarIA } from './ai/index.js';
 import { exec } from 'node:child_process';
+import { fileURLToPath } from 'node:url';
 import { carpetaDatos } from './lib/datos.js';
+
+// Versión y carpeta de esta copia de la app: el arranque las compara para no reutilizar
+// un servidor viejo que siga abierto tras una actualización.
+const RAIZ_APP = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+export const VERSION = JSON.parse(fs.readFileSync(path.join(RAIZ_APP, 'package.json'), 'utf8')).version;
 
 class ErrorCliente extends Error {}
 const exigir = (cond, msg) => { if (!cond) throw new ErrorCliente(msg); };
@@ -51,7 +57,7 @@ function crud(router, db, { ruta, tabla, clave = 'id', columnas, json = [], orde
   });
 }
 
-export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolectar } = {}) {
+export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolectar, alApagar = null } = {}) {
   const app = express();
   app.use(express.json({ limit: '20mb' }));
   const api = express.Router();
@@ -62,8 +68,16 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
       .map((r) => [r.estado, r.n]));
     const porReglas = db.prepare("SELECT COUNT(*) AS n FROM senales WHERE clasificador = 'reglas' AND estado IN ('clasificada','descartada')").get().n;
     res.json({ ia: estadoIA(db), firestore: estadoFirestore(db), recoleccion: estadoRecoleccion(db), senales: conteo, por_reglas: porReglas,
-      carpeta_datos: carpetaDatos() });
+      carpeta_datos: carpetaDatos(), version: VERSION, carpeta_app: RAIZ_APP });
   });
+
+  // Lo usa el arranque para cerrar una copia vieja que siga abierta (solo escucha en 127.0.0.1).
+  if (alApagar) {
+    api.post('/apagar', (req, res) => {
+      res.json({ ok: true });
+      setTimeout(alApagar, 200);
+    });
+  }
 
   api.get('/tablero', (req, res) => {
     const sal = calcularSaliencia(db);

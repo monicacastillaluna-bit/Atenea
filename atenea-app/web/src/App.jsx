@@ -38,6 +38,7 @@ function Pie() {
       <span>IA: {ia.proveedor === 'gemini' ? 'Gemini' : 'Claude'} · {ia.disponible ? 'lista' : 'sin clave'}</span>
       <span>Última recolección: {fechaHora(datos.recoleccion.ultima?.inicio)}</span>
       <span>Firestore: {datos.firestore.configurado ? 'configurado' : 'no configurado'}</span>
+      <span>Versión de la app: {datos.version}</span>
     </div>
   );
 }

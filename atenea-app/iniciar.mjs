@@ -34,14 +34,31 @@ function ultimaModificacion(dir) {
   return max;
 }
 
-async function yaCorriendo() {
+const version = JSON.parse(fs.readFileSync(path.join(raiz, 'package.json'), 'utf8')).version;
+
+async function estadoCorriendo() {
   try {
     const r = await fetch(`http://127.0.0.1:${puerto}/api/estado`, { signal: AbortSignal.timeout(1500) });
-    const d = await r.json();
-    return d.carpeta_datos ? 'actual' : 'anterior';
+    return await r.json();
   } catch {
     return null;
   }
+}
+
+// ¿Hay una Atenea abierta? 'esta' = esta misma copia y versión; 'otra' = una copia vieja o de
+// otra carpeta, que se intenta cerrar para que no se siga usando el código anterior.
+async function yaCorriendo() {
+  const d = await estadoCorriendo();
+  if (!d) return null;
+  if (d.version === version && path.resolve(d.carpeta_app ?? '') === raiz) return 'esta';
+  try {
+    await fetch(`http://127.0.0.1:${puerto}/api/apagar`, { method: 'POST', signal: AbortSignal.timeout(1500) });
+  } catch { /* las versiones viejas no saben cerrarse solas */ }
+  for (let i = 0; i < 20; i++) {
+    await new Promise((res) => setTimeout(res, 500));
+    if (!(await estadoCorriendo())) return null;
+  }
+  return 'otra';
 }
 
 function dependencias() {
@@ -87,13 +104,13 @@ function accesoDirecto() {
 
 try {
   const corriendo = await yaCorriendo();
-  if (corriendo === 'actual') {
+  if (corriendo === 'esta') {
     console.log('Atenea ya estaba abierta: abriendo el navegador.');
     abrirNavegador();
     process.exit(0);
   }
-  if (corriendo === 'anterior') {
-    console.log('Hay una versión ANTERIOR de Atenea abierta. Cierra su ventana negra y vuelve a abrir esta.');
+  if (corriendo === 'otra') {
+    console.log(`Hay otra versión de Atenea abierta. Cierra su ventana negra (está minimizada en la barra de tareas) y vuelve a abrir esta, que es la ${version}.`);
     process.exit(1);
   }
   dependencias();
