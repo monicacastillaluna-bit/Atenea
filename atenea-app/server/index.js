@@ -22,7 +22,8 @@ const { iniciarProgramador } = await import('./lib/recoleccion.js');
 
 const archivoDb = process.env.ATENEA_DB || datos.db;
 const db = abrirDb(archivoDb);
-const app = crearApp(db, { raizRepo: path.resolve(raizApp, '..'), dirWeb: path.join(raizApp, 'web', 'dist') });
+const app = crearApp(db, { raizRepo: path.resolve(raizApp, '..'), dirWeb: path.join(raizApp, 'web', 'dist'),
+  alApagar: () => { console.log('Se abrió una versión más nueva de Atenea: esta ventana se cierra.'); process.exit(0); } });
 const puerto = Number(process.env.PORT || 5180);
 
 // Solo escucha en este computador: la app es de uso interno y no debe quedar expuesta en la red.

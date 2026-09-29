@@ -77,6 +77,22 @@ export function urlReddit({ consulta, subreddit }) {
     : `https://www.reddit.com/search.json?q=${q}&sort=new&t=year&limit=50`;
 }
 
+// Reddit bloquea con frecuencia la API JSON sin cuenta (HTTP 403). Su feed RSS público es otra
+// vía oficial: se intenta como respaldo antes de dar el error.
+async function recolectarReddit(c) {
+  const pais = c.pais ?? null;
+  try {
+    return parsearReddit(await descargar(urlReddit(c), { json: true }), { pais });
+  } catch (e) {
+    if (!/HTTP (403|429)/.test(e.message)) throw e;
+    try {
+      return parsearFeed(await descargar(urlReddit(c).replace('/search.json?', '/search.rss?')), { pais });
+    } catch (e2) {
+      throw new Error('Reddit bloquea las consultas sin cuenta (HTTP 403). Pausa esta fuente: el resto del Radar sigue funcionando.', { cause: e2 });
+    }
+  }
+}
+
 // OpenAlex (api.openalex.org): índice abierto de artículos académicos, que incluye muchas revistas
 // de SciELO, Redalyc y Dialnet con DOI. Se limita a artículos en español con al menos una
 // institución de los 19 países del Radar.
@@ -126,7 +142,7 @@ export async function recolectar(fuente) {
     case 'google_news':
       return parsearFeed(await descargar(urlGoogleNews(c)), { pais: c.pais ?? null });
     case 'reddit':
-      return parsearReddit(await descargar(urlReddit(c), { json: true }), { pais: c.pais ?? null });
+      return recolectarReddit(c);
     case 'rss':
       if (!c.url) throw new Error('La fuente RSS no tiene URL');
       return parsearFeed(await descargar(c.url), { pais: c.pais ?? null });

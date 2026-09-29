@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.3 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.4 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -96,10 +96,12 @@ A la izquierda está el **menú**, agrupado por módulo:
 | **Canal** | Ventas |
 | **Sistema** | Ajustes y respaldo |
 
-Abajo, en el menú, siempre ves tres datos:
+Abajo, en el menú, siempre ves cuatro datos:
 - qué IA está activa y si tiene clave;
 - cuándo fue la última recolección;
-- si la copia en Firestore está configurada.
+- si la copia en Firestore está configurada;
+- la **versión de la app** (por ejemplo, 1.4.0). Sirve para confirmar que una actualización quedó
+  aplicada.
 
 **Los avisos** aparecen abajo a la derecha: **azules** si algo salió bien, **rojos** si hubo un
 error. Los avisos rojos explican qué pasó; si no lo entiendes, copia el mensaje y compártelo.
@@ -328,7 +330,7 @@ Son los lugares donde el Radar busca:
 | Tipo | Qué trae | Nota |
 |---|---|---|
 | **Google Noticias** | Una búsqueda por país, más búsquedas por tema y por organismo (OEI, ANUIES, sindicatos españoles, FAPUV, Mineduc, Minedu…). | Trae **titulares**, no el artículo completo. |
-| **Reddit** | Publicaciones de foros. | Trae el texto completo. |
+| **Reddit** | Publicaciones de foros. | Trae el texto completo. Reddit bloquea a menudo las consultas sin cuenta: si sus fuentes marcan «HTTP 403», páusalas; el resto del Radar sigue funcionando. |
 | **RSS** | Blogs especializados, sindicatos de docentes universitarios, observatorios, organismos (UNESCO IESALC, CLACSO, CRUE) y revistas académicas. La app ya trae 19, y puedes agregar más. | Trae el texto que publique cada sitio. |
 | **Artículos académicos (OpenAlex)** | Artículos recientes en español, de autores de los 19 países, sobre burnout, precarización, satisfacción laboral y desafíos de la profesión docente. Incluye muchas revistas de SciELO, Redalyc y Dialnet. | Trae el título y el resumen. Es evidencia investigada: sirve para respaldar un dolor, no para medir su intensidad del día. |
 
@@ -681,7 +683,10 @@ Tus datos no se pierden al actualizar, porque viven en `Atenea-datos`, fuera de 
 4. **Descomprímela:** clic derecho sobre el ZIP → **Extraer todo**.
 5. **Abre la versión nueva:** entra a la carpeta nueva → `atenea-app` → doble clic en **`Iniciar
    Atenea.bat`**. Instala lo que cambió y actualiza el ícono del escritorio.
-6. **Comprueba** que tus señales y fichas siguen ahí. Después puedes borrar la carpeta vieja.
+6. **Comprueba** que abajo, en el menú, aparece la versión nueva y que tus señales y fichas siguen
+   ahí. Después puedes borrar la carpeta vieja.
+
+Si al abrir la versión nueva la app vieja seguía abierta, la nueva la cierra sola (desde la 1.4.0).
 
 ---
 
@@ -691,7 +696,8 @@ Tus datos no se pierden al actualizar, porque viven en `Atenea-datos`, fuera de 
 |---|---|
 | **El navegador no se abre.** | Busca en la barra de tareas la ventana «Atenea - Centro de mando» y ábrela. Si muestra un error, cópialo. Si dice «Atenea lista», entra a `http://localhost:5180`. |
 | **«El puerto 5180 ya está en uso».** | Hay otra ventana de Atenea abierta, quizá de una versión anterior. Ciérrala y vuelve a abrir la app. |
-| **«Hay una versión ANTERIOR de Atenea abierta».** | Cierra la ventana negra vieja y abre la nueva. |
+| **«Hay otra versión de Atenea abierta».** | Cierra la ventana negra vieja (minimizada en la barra de tareas) y abre la nueva con `Iniciar Atenea.bat` de la carpeta nueva. |
+| **Actualicé, pero no veo las novedades** (por ejemplo, fuentes nuevas). | Mira la versión abajo, en el menú. Si no es la nueva, cierra todas las ventanas negras de Atenea y abre `Iniciar Atenea.bat` **desde la carpeta nueva**, no desde un ícono viejo. |
 | **«No encuentro Node.js».** | Instala Node.js (versión LTS) desde nodejs.org. |
 | **«No encuentro los archivos de la app».** | Abriste el iniciador desde dentro del ZIP. Descomprime primero con **Extraer todo**. |
 | **«Falta la clave de IA» o «sin clave».** | Pon la clave en el `.env` (ver sección 9) y reinicia la app. |
