@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.4 (septiembre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.5 (octubre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -100,7 +100,7 @@ Abajo, en el menú, siempre ves cuatro datos:
 - qué IA está activa y si tiene clave;
 - cuándo fue la última recolección;
 - si la copia en Firestore está configurada;
-- la **versión de la app** (por ejemplo, 1.4.1). Sirve para confirmar que una actualización quedó
+- la **versión de la app** (por ejemplo, 1.5.0). Sirve para confirmar que una actualización quedó
   aplicada.
 
 **Los avisos** aparecen abajo a la derecha: **azules** si algo salió bien, **rojos** si hubo un
@@ -490,13 +490,25 @@ para revisar. La producción empieza **después de aprobar la Compuerta 1**.
 
 **1. Preparar.** En la pestaña **Producción**, pulsa **Preparar piezas desde la ficha**.
 - La app crea una pieza por cada línea de «Piezas» de la ficha y la ficha pasa a «En producción».
-- A cada pieza le asigna:
-  - un **tipo de archivo**: Word, o PowerPoint si su nombre dice «presentación», «diapositivas» o
-    «webinar»;
-  - una **skill de producción** según su nombre: una guía usa SKL-PRO-002, una rúbrica SKL-EVAL-001 y
-    un guion SKL-PRO-005.
+- A cada pieza le asigna una **skill de producción** según su nombre. Por ejemplo, una guía usa
+  SKL-PRO-002, una rúbrica SKL-EVAL-001, una calculadora o simulador SKL-DIS-003 y una infografía
+  SKL-PRO-001.
+- **El formato de entrega lo determina la skill.** Siempre corresponde a lo que la skill crea, y no se
+  elige aparte:
 
-  Puedes cambiar ambas cosas dentro de cada pieza, en «Tipo y skill de producción».
+  | Skill | Se entrega como |
+  |---|---|
+  | SKL-PRO-002 PDFs y guías de estudio | **Word + PDF**: Word para editar y PDF para vender |
+  | SKL-PRO-003 Presentaciones · SKL-EXT-001 Webinars | **PowerPoint**, con notas del presentador |
+  | SKL-PRO-001 Infografías | **Infografía**: una página visual en HTML, lista para imprimir o guardar como PDF |
+  | SKL-DIS-003 Aplicaciones web y herramientas | **Herramienta web**: un archivo HTML que funciona sin internet |
+  | Workbooks, guiones, talleres, cursos, evaluación, clínicas, IA | **Word** |
+
+  Para cambiar el formato de una pieza, cambia su skill dentro de la pieza, en «Skill de producción
+  y formato de entrega». Si el formato nuevo no admite el contenido que ya tiene (por ejemplo, de
+  Word a herramienta web), ese contenido se guarda como versión anterior y la pieza queda pendiente
+  de volver a elaborarse. La SKL-GEN-001 (voz de Atenea) no aparece en la lista porque no produce
+  piezas: se aplica a todas.
 - **+ Agregar pieza** suma una pieza que no estaba en la ficha, por ejemplo «Correo de bienvenida al
   comprador».
 
@@ -517,7 +529,9 @@ Para redactar cada pieza, la IA usa:
 
 ![Revisar una pieza](manual/img/16-pieza.jpg)
 
-- **Vista previa:** así se verá el contenido.
+- **Vista previa:** así se verá el contenido. En infografías y herramientas, la vista previa
+  **funciona**: puedes escribir datos, pulsar botones y ver los resultados. **Abrir en otra pestaña**
+  la muestra a pantalla completa.
 - **Editar texto:** para corregir tú misma. El formato es sencillo:
   - `#` para el título y `##` para las secciones;
   - `- ` para las viñetas y `**texto**` para la negrita;
@@ -525,31 +539,58 @@ Para redactar cada pieza, la IA usa:
 
   En presentaciones, cada `##` es una diapositiva y una línea que empieza con `Notas:` va a las notas
   del presentador. Pulsa **Guardar cambios** al terminar.
+
+  En infografías y herramientas, la pestaña se llama **Editar código HTML** y muestra el código
+  completo. Para cambios grandes, es mejor pedírselos a la IA con **Rehacer**.
 - **Pedir una nueva versión a la IA:** escribe qué cambiar (por ejemplo, «acorta la introducción y
   agrega una rúbrica de 4 niveles») y pulsa **Rehacer**. La versión anterior se guarda: con **Volver
   a la versión anterior** la recuperas.
 - **Indicaciones para esta pieza:** lo que la IA debe tener en cuenta cada vez que la elabore, por
   ejemplo «incluir un ejemplo de una facultad de salud; máximo 6 páginas».
 - **Pendientes de verificar:** al final de la pieza, la IA lista lo que no pudo respaldar con la
-  normativa o la evidencia. **Verifícalo y borra esa sección antes de entregar.**
+  normativa o la evidencia. **Verifícalo y borra esa sección antes de entregar.** En infografías y
+  herramientas, los pendientes aparecen en un recuadro amarillo encima de la vista previa y nunca salen
+  en el archivo descargado. Si la herramienta carga algo de internet, también aparece ahí, porque no
+  funcionaría sin conexión.
 
 **4. Aprobar.** Cuando la pieza esté bien, pulsa **Aprobar pieza**. Si después editas su texto,
 vuelve a «Borrador» y hay que aprobarla de nuevo.
 
+Las **herramientas web** y las **infografías** son código, no texto. Por eso, al pulsar **Aprobar
+pieza**, la app muestra una lista de comprobación y solo deja aprobar cuando marcas todas las casillas.
+- **Herramienta:**
+  - la probaste con datos reales;
+  - verificaste los cálculos a mano;
+  - probaste datos vacíos o equivocados;
+  - la abriste en el celular;
+  - abriste el archivo descargado sin internet.
+- **Infografía:**
+  - revisaste cada dato;
+  - la imprimiste o guardaste como PDF sin cortes;
+  - se lee bien en el celular.
+
 **5. Descargar.**
-- Dentro de cada pieza, **Descargar Word** o **Descargar PowerPoint**. Los archivos llevan portada,
-  colores y tipografías de Atenea, y son editables.
+- Dentro de cada pieza, un botón por cada archivo de su formato:
+  - **Descargar Word**;
+  - **Descargar PDF**;
+  - **Descargar PowerPoint**;
+  - **Descargar HTML**.
+
+  Llevan portada (Word, PDF, PowerPoint), colores y tipografías de Atenea. Los Word y PowerPoint son
+  editables. Los archivos HTML se abren con doble clic en cualquier navegador, sin internet. Las
+  infografías se imprimen o se guardan como PDF con **Ctrl+P**.
 - **Descargar kit (aprobadas):** un ZIP con las piezas aprobadas, numeradas y con un archivo LEEME,
-  listo para entregar o subir a Hotmart.
+  listo para entregar o subir a Hotmart. Las guías van en Word y en PDF.
 - **Descargar borrador completo:** el ZIP con todas las piezas que tengan contenido, aprobadas o no.
   Sirve para revisar el kit entero antes de las Compuertas 2 y 3.
 
-**6. Infografías, videos y audios con NotebookLM.** La app no diseña imágenes ni graba videos, pero
-prepara todo para que NotebookLM los genere a partir de tus piezas aprobadas:
+**6. Videos y audios con NotebookLM.** La app no graba videos ni audios, pero prepara todo para que
+NotebookLM los genere a partir de tus piezas aprobadas. También sirve si quieres una infografía con el
+estilo de NotebookLM, además de la de la app.
 
 1. Pulsa **Preparar para NotebookLM**. Se descarga un ZIP con dos cosas:
    - la carpeta `fuentes`, con tus piezas aprobadas en texto, ya sin la sección «Pendientes de
-     verificar»;
+     verificar». De las infografías y herramientas va solo su texto, no el código;
    - el archivo `INSTRUCCIONES_NotebookLM.md`.
 2. Abre las instrucciones: tienen los pasos y los **textos listos para pegar** para pedir infografía,
    resumen en video, resumen en audio (formato pódcast), presentación y material de estudio.
@@ -566,10 +607,12 @@ lo haga con la skill de NotebookLM.
 
 | Pieza | Resultado |
 |---|---|
-| Guías, manuales, plantillas, rúbricas, listas de cotejo, bancos de ejemplos, workbooks | Completas, en Word |
-| Guiones de video o audio, correos, textos de venta, prompts | Completos, en Word |
+| Guías, manuales, plantillas, bancos de ejemplos | Completas, en Word + PDF |
+| Rúbricas, listas de cotejo, workbooks, guiones, correos, prompts | Completos, en Word |
 | Presentaciones | Estructura y texto completos en PowerPoint; el diseño fino lo puedes mejorar tú o en Canva |
-| Infografías, videos, audios | La app hace el texto o guion; el material visual o de audio lo genera NotebookLM con **Preparar para NotebookLM** |
+| Infografías | Una página visual con la identidad Atenea (HTML imprimible). Revisa cada dato antes de aprobar |
+| Herramientas (calculadoras, simuladores, generadores) | Funcionan dentro de un solo archivo HTML. **Hay que probarlas de verdad** antes de aprobar |
+| Videos y audios | La app hace el guion; el video o audio lo genera NotebookLM con **Preparar para NotebookLM** |
 
 > **Recuerda:** la IA produce un borrador de calidad, no el producto final. Tu revisión, sobre todo
 > de lo normativo, es la Compuerta 2.

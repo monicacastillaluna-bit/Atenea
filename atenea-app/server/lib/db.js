@@ -4,6 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import fs from 'node:fs';
 import path from 'node:path';
 import { sembrar } from './semillas.js';
+import { FORMATOS, esHtml, formatoDeSkill, pareceHtml } from './formatos.js';
 
 // Tipos de fuente admitidos. Al agregar uno, abrirDb migra las bases existentes.
 export const TIPOS_FUENTE = ['google_news', 'reddit', 'rss', 'openalex'];
@@ -18,6 +19,23 @@ const tablaFuentes = (nombre) => `CREATE TABLE IF NOT EXISTS ${nombre} (
   ultimo_estado TEXT,
   ultimo_error TEXT,
   total_items INTEGER NOT NULL DEFAULT 0
+);`;
+
+const tablaPiezas = (nombre) => `CREATE TABLE IF NOT EXISTS ${nombre} (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
+  orden INTEGER NOT NULL DEFAULT 0,
+  titulo TEXT NOT NULL,
+  tipo TEXT NOT NULL DEFAULT 'documento' CHECK (tipo IN (${Object.keys(FORMATOS).map((t) => `'${t}'`).join(',')})),
+  skill_codigo TEXT,
+  instrucciones TEXT NOT NULL DEFAULT '',
+  estado TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','borrador','aprobada')),
+  contenido TEXT NOT NULL DEFAULT '',
+  anterior TEXT,
+  version INTEGER NOT NULL DEFAULT 0,
+  generado_por TEXT,
+  creado_en TEXT NOT NULL,
+  actualizado_en TEXT NOT NULL
 );`;
 
 const ESQUEMA = `
@@ -102,22 +120,7 @@ CREATE TABLE IF NOT EXISTS fichas (
   creado_en TEXT NOT NULL,
   actualizado_en TEXT NOT NULL
 );
-CREATE TABLE IF NOT EXISTS piezas (
-  id INTEGER PRIMARY KEY AUTOINCREMENT,
-  ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
-  orden INTEGER NOT NULL DEFAULT 0,
-  titulo TEXT NOT NULL,
-  tipo TEXT NOT NULL DEFAULT 'documento' CHECK (tipo IN ('documento','presentacion')),
-  skill_codigo TEXT,
-  instrucciones TEXT NOT NULL DEFAULT '',
-  estado TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','borrador','aprobada')),
-  contenido TEXT NOT NULL DEFAULT '',
-  anterior TEXT,
-  version INTEGER NOT NULL DEFAULT 0,
-  generado_por TEXT,
-  creado_en TEXT NOT NULL,
-  actualizado_en TEXT NOT NULL
-);
+${tablaPiezas('piezas')}
 CREATE TABLE IF NOT EXISTS bitacora (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
@@ -157,30 +160,61 @@ export function abrirDb(archivo) {
   const db = new DatabaseSync(archivo);
   db.exec('PRAGMA journal_mode = WAL; PRAGMA foreign_keys = ON;');
   db.exec(ESQUEMA);
-  migrarFuentes(db);
+  migrarCheck(db, 'fuentes', tablaFuentes, TIPOS_FUENTE);
+  migrarCheck(db, 'piezas', tablaPiezas, Object.keys(FORMATOS));
   sembrar(db);
+  corregirFormatosPiezas(db);
   return db;
 }
 
-// Las bases creadas antes de un tipo de fuente nuevo tienen el CHECK viejo: SQLite no permite
-// cambiarlo, así que se recrea la tabla conservando filas e ids (procedimiento oficial de SQLite).
-function migrarFuentes(db) {
-  const { sql } = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'fuentes'").get();
-  if (TIPOS_FUENTE.every((t) => sql.includes(`'${t}'`))) return;
+// Las bases creadas antes de un valor nuevo (tipo de fuente, formato de pieza) tienen el CHECK
+// viejo: SQLite no permite cambiarlo, así que se recrea la tabla conservando filas e ids
+// (procedimiento oficial de SQLite).
+function migrarCheck(db, tabla, crear, valores) {
+  const { sql } = db.prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = ?").get(tabla);
+  if (valores.every((t) => sql.includes(`'${t}'`))) return;
+  const cols = db.prepare(`PRAGMA table_info(${tabla})`).all().map((c) => c.name).join(', ');
   db.exec('PRAGMA foreign_keys = OFF');
   try {
     db.exec(`BEGIN;
-      ${tablaFuentes('fuentes_nueva')}
-      INSERT INTO fuentes_nueva (id, tipo, nombre, config, activo, ultima_ejecucion, ultimo_estado, ultimo_error, total_items)
-        SELECT id, tipo, nombre, config, activo, ultima_ejecucion, ultimo_estado, ultimo_error, total_items FROM fuentes;
-      DROP TABLE fuentes;
-      ALTER TABLE fuentes_nueva RENAME TO fuentes;
+      ${crear(`${tabla}_nueva`)}
+      INSERT INTO ${tabla}_nueva (${cols}) SELECT ${cols} FROM ${tabla};
+      DROP TABLE ${tabla};
+      ALTER TABLE ${tabla}_nueva RENAME TO ${tabla};
       COMMIT;`);
   } catch (e) {
     db.exec('ROLLBACK');
     throw e;
   } finally {
     db.exec('PRAGMA foreign_keys = ON');
+  }
+}
+
+// Cambia el formato de una pieza al que corresponde a su skill. Si el contenido ya no sirve para
+// el formato nuevo (Markdown ↔ HTML), se guarda como versión anterior y la pieza queda pendiente de
+// elaborar; si sirve, vuelve a borrador para revisarla en el formato nuevo (salvo Word ↔ Word + PDF).
+export function cambiosDeFormato(p, skill) {
+  const tipo = formatoDeSkill(skill);
+  if (tipo === p.tipo) return null;
+  if (!p.contenido) return { tipo, estado: 'pendiente' };
+  if (esHtml(tipo) !== pareceHtml(p.contenido)) return { tipo, estado: 'pendiente', contenido: '', anterior: p.contenido };
+  // Word ↔ Word + PDF: el mismo documento, solo cambia lo que se descarga.
+  const word = new Set(['documento', 'documento_pdf']);
+  if (word.has(tipo) && word.has(p.tipo)) return { tipo, estado: p.estado };
+  return { tipo, estado: 'borrador' };
+}
+
+// Piezas creadas antes de la regla «la skill determina el formato» (2026-10-01).
+function corregirFormatosPiezas(db) {
+  const t = new Date().toISOString();
+  for (const p of db.prepare('SELECT * FROM piezas').all()) {
+    const c = cambiosDeFormato(p, p.skill_codigo);
+    if (!c) continue;
+    db.prepare(`UPDATE piezas SET tipo = ?, estado = ?, contenido = ?, anterior = ?, actualizado_en = ? WHERE id = ?`)
+      .run(c.tipo, c.estado, c.contenido ?? p.contenido, c.anterior ?? p.anterior, t, p.id);
+    db.prepare("INSERT INTO bitacora (ficha_id, fecha, tipo, texto) VALUES (?, ?, 'nota', ?)").run(p.ficha_id, t,
+      `Formato corregido: «${p.titulo}» pasa a ${FORMATOS[c.tipo].nombre}, el que corresponde a su skill (${p.skill_codigo ?? 'sin skill'}).`
+      + (c.anterior ? ' Hay que volver a elaborarla.' : c.estado === 'borrador' && p.estado === 'aprobada' ? ' Hay que volver a aprobarla.' : ''));
   }
 }
 

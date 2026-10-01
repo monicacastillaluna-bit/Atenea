@@ -3,12 +3,17 @@
 // audio, presentación y material de estudio. La automatización completa queda para
 // después del piloto (NotebookLM no tiene API pública oficial).
 import JSZip from 'jszip';
+import { esHtml, sinPendientesHtml } from './formatos.js';
+import { limpiarHtml } from './texto.js';
 
 const nombre = (s) => s.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w\s-]/g, '')
   .trim().replace(/\s+/g, '_').slice(0, 70) || 'pieza';
 
 // La sección interna «Pendientes de verificar» nunca va como fuente.
 export const sinPendientes = (md) => md.replace(/\n## Pendientes de verificar[\s\S]*$/i, '').trim();
+
+// Infografías y herramientas: NotebookLM recibe su texto, no el código.
+const textoFuente = (p) => (esHtml(p.tipo) ? `# ${p.titulo}\n\n${limpiarHtml(sinPendientesHtml(p.contenido))}` : sinPendientes(p.contenido));
 
 export function instrucciones(ficha, piezas, publico) {
   const cuaderno = `${ficha.codigo ?? 'Producto'} · ${ficha.titulo} (Fábrica)`;
@@ -85,6 +90,6 @@ export async function paqueteNotebookLM(ficha, piezas) {
   const raiz = zip.folder(nombre(`${ficha.codigo ?? 'producto'} NotebookLM`));
   raiz.file('INSTRUCCIONES_NotebookLM.md', instrucciones(ficha, aprobadas, ficha.contenido?.publico));
   const fuentes = raiz.folder('fuentes');
-  aprobadas.forEach((p, i) => fuentes.file(`${String(i + 1).padStart(2, '0')}_${nombre(p.titulo)}.md`, `${sinPendientes(p.contenido)}\n`));
+  aprobadas.forEach((p, i) => fuentes.file(`${String(i + 1).padStart(2, '0')}_${nombre(p.titulo)}.md`, `${textoFuente(p)}\n`));
   return { buffer: await zip.generateAsync({ type: 'nodebuffer', compression: 'DEFLATE' }), total: aprobadas.length };
 }

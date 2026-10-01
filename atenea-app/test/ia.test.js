@@ -4,6 +4,7 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import http from 'node:http';
 import { abrirDb, guardarAjuste } from '../server/lib/db.js';
+import { responderStream } from './sse.js';
 
 let ultimo = null;
 let responder = () => ({ status: 200, body: {} });
@@ -14,6 +15,7 @@ const srv = http.createServer((req, res) => {
   req.on('end', () => {
     ultimo = { url: req.url, headers: req.headers, body: cuerpo ? JSON.parse(cuerpo) : null };
     const r = responder(ultimo);
+    if (r.status === 200 && ultimo.body?.stream) return responderStream(res, r.body, { 'request-id': 'req_test' });
     res.writeHead(r.status, { 'Content-Type': 'application/json', 'request-id': 'req_test' });
     res.end(JSON.stringify(r.body));
   });

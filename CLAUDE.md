@@ -134,7 +134,10 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   (`node:sqlite`) + React/Vite. Radar automático (Google Noticias por país y por tema, Reddit, RSS) →
   clasificación con IA intercambiable (Claude/Gemini, claves solo en `atenea-app/.env`) → matriz de
   saliencia dolor × país → fichas de la Fábrica con las 3 compuertas y bitácora → producción: la IA
-  elabora cada pieza (Markdown editable → Word/PowerPoint con identidad Atenea, kit en ZIP) tras la Compuerta 1 → ventas (CSV de
+  elabora cada pieza tras la Compuerta 1 en el formato que determina su skill (regla de Mónica, 2026-10-01: el formato
+  siempre corresponde a lo que crea la skill; tabla en `atenea-app/server/lib/formatos.js`): Word, Word + PDF
+  (guías), PowerPoint, infografía HTML imprimible o herramienta web HTML sin internet (SKL-DIS-003), con identidad
+  Atenea y kit en ZIP → ventas (CSV de
   Hotmart) que realimentan el Radar. Copia opcional en Firestore (`artifacts/athenea/public/data/app_*`).
   **Decisión de Mónica (2026-09-25): el Radar del software se enfoca SOLO en docentes de educación
   superior**, en 19 países (17 de Latinoamérica y el Caribe + México + España), con taxonomía propia

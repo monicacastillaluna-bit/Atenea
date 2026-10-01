@@ -1,8 +1,10 @@
 // Producción: la Fábrica no solo lista las piezas de una ficha, las ELABORA con IA.
 // Cada pieza se redacta en Markdown (editable en la app) siguiendo su skill de
 // producción, la voz de Atenea, la evidencia del Radar y la normativa registrada.
-// Luego se descarga como Word o PowerPoint con la identidad Atenea.
-import { fila, filas, ahora, transaccion } from './db.js';
+// Luego se descarga en el formato que corresponde a su skill (Word, Word + PDF, PowerPoint,
+// infografía o herramienta web en HTML) con la identidad Atenea.
+import { fila, filas, ahora, transaccion, cambiosDeFormato } from './db.js';
+import { FORMATOS, SKILL_POR_DEFECTO, conPendientesHtml, esHtml, esSkillDePieza, formatoDeSkill, pareceHtml } from './formatos.js';
 import { generarJson, estadoIA } from '../ai/index.js';
 import { listarSkills, leerSkill } from './skills.js';
 import { anotar } from './fabrica.js';
@@ -10,23 +12,35 @@ import { anotar } from './fabrica.js';
 // Estados de la ficha en los que ya pasó la Compuerta 1 (se puede producir).
 const ESTADOS_PRODUCCION = new Set(['c1_aprobada', 'produccion', 'c2_aprobada', 'c3_aprobada', 'en_venta']);
 
-// Skill sugerida según el nombre de la pieza (se puede cambiar en la app).
+// Skill sugerida según el nombre de la pieza (se puede cambiar en la app). El formato sale de la skill.
 const REGLAS_SKILL = [
-  [/presentaci|diapositiv|l[aá]mina|slides?/i, 'SKL-PRO-003', 'presentacion'],
-  [/webinar/i, 'SKL-EXT-001', 'presentacion'],
-  [/infograf/i, 'SKL-PRO-001', 'documento'],
-  [/workbook|cuaderno de trabajo|cuadernillo/i, 'SKL-PRO-004', 'documento'],
-  [/gui[oó]n|video|audio|podcast|c[aá]psula|mini-?curso/i, 'SKL-PRO-005', 'documento'],
-  [/r[uú]brica|cotejo|evaluaci|instrumento|feedback|retroaliment/i, 'SKL-EVAL-001', 'documento'],
-  [/cl[ií]nica|preguntas frecuentes|dudas/i, 'SKL-EVAL-002', 'documento'],
-  [/taller/i, 'SKL-DIS-002', 'documento'],
-  [/curso|m[oó]dulo|programa formativo/i, 'SKL-DIS-001', 'documento'],
-  [/prompt|\bia\b|inteligencia artificial/i, 'SKL-IA-001', 'documento'],
+  [/calculadora|simulador|generador|herramienta|aplicaci[oó]n|\bapp\b|interactiv/i, 'SKL-DIS-003'],
+  [/presentaci|diapositiv|l[aá]mina|slides?/i, 'SKL-PRO-003'],
+  [/webinar/i, 'SKL-EXT-001'],
+  [/infograf/i, 'SKL-PRO-001'],
+  [/workbook|cuaderno de trabajo|cuadernillo/i, 'SKL-PRO-004'],
+  [/gui[oó]n|video|audio|podcast|c[aá]psula|mini-?curso/i, 'SKL-PRO-005'],
+  [/r[uú]brica|cotejo|evaluaci|instrumento|feedback|retroaliment/i, 'SKL-EVAL-001'],
+  [/cl[ií]nica|preguntas frecuentes|dudas/i, 'SKL-EVAL-002'],
+  [/taller/i, 'SKL-DIS-002'],
+  [/curso|m[oó]dulo|programa formativo/i, 'SKL-DIS-001'],
+  [/prompt|\bia\b|inteligencia artificial/i, 'SKL-IA-001'],
 ];
 
 export function sugerirPieza(titulo) {
-  for (const [re, skill, tipo] of REGLAS_SKILL) if (re.test(titulo)) return { skill, tipo };
-  return { skill: 'SKL-PRO-002', tipo: 'documento' }; // guías, plantillas, bancos, manuales
+  const skill = REGLAS_SKILL.find(([re]) => re.test(titulo))?.[1] ?? SKILL_POR_DEFECTO; // guías, plantillas, bancos, manuales
+  return { skill, tipo: formatoDeSkill(skill) };
+}
+
+function exigirSkill(codigo) {
+  if (!esSkillDePieza(codigo)) throw new Error(`La skill ${codigo} no produce piezas (SKL-GEN-001 se aplica a todas).`);
+}
+
+// El formato no se elige: si llega, debe ser el de la skill.
+function exigirFormato(tipo, skill) {
+  if (tipo !== undefined && tipo !== formatoDeSkill(skill)) {
+    throw new Error(`El formato lo determina la skill: ${skill} se entrega como ${FORMATOS[formatoDeSkill(skill)].nombre}.`);
+  }
 }
 
 export const listarPiezas = (db, fichaId) =>
@@ -70,23 +84,34 @@ export function prepararPiezas(db, fichaId) {
 export function crearPieza(db, fichaId, { titulo, tipo, skill_codigo }) {
   fichaDe(db, fichaId);
   const s = sugerirPieza(titulo);
+  const skill = skill_codigo ?? s.skill;
+  exigirSkill(skill);
+  exigirFormato(tipo, skill);
   const orden = (db.prepare('SELECT MAX(orden) AS m FROM piezas WHERE ficha_id = ?').get(fichaId).m ?? 0) + 1;
   const t = ahora();
   const r = db.prepare(`INSERT INTO piezas (ficha_id, orden, titulo, tipo, skill_codigo, creado_en, actualizado_en)
-    VALUES (?, ?, ?, ?, ?, ?, ?)`).run(fichaId, orden, titulo, tipo ?? s.tipo, skill_codigo ?? s.skill, t, t);
+    VALUES (?, ?, ?, ?, ?, ?, ?)`).run(fichaId, orden, titulo, formatoDeSkill(skill), skill, t, t);
   return db.prepare('SELECT * FROM piezas WHERE id = ?').get(r.lastInsertRowid);
 }
 
 export function actualizarPieza(db, id, cambios) {
   const p = db.prepare('SELECT * FROM piezas WHERE id = ?').get(id);
   if (!p) return null;
-  const m = { ...p, ...cambios };
+  const skill = cambios.skill_codigo ?? p.skill_codigo;
+  if (cambios.skill_codigo !== undefined) exigirSkill(cambios.skill_codigo);
+  exigirFormato(cambios.tipo, skill);
+  const resto = { ...cambios };
+  delete resto.tipo; // el formato no se fija a mano: sale de la skill
+  const m = { ...p, ...resto, ...(cambiosDeFormato(p, skill) ?? {}) };
   // Editar a mano el texto de una pieza aprobada la devuelve a borrador (hay que reaprobarla).
   const tocoTexto = cambios.contenido !== undefined && cambios.contenido !== p.contenido;
   if (tocoTexto && cambios.estado === undefined && p.estado !== 'borrador') m.estado = 'borrador';
   db.prepare(`UPDATE piezas SET titulo = ?, tipo = ?, skill_codigo = ?, instrucciones = ?, estado = ?, contenido = ?,
-      orden = ?, actualizado_en = ? WHERE id = ?`)
-    .run(m.titulo, m.tipo, m.skill_codigo, m.instrucciones, m.estado, m.contenido, m.orden, ahora(), id);
+      anterior = ?, orden = ?, actualizado_en = ? WHERE id = ?`)
+    .run(m.titulo, m.tipo, m.skill_codigo, m.instrucciones, m.estado, m.contenido, m.anterior, m.orden, ahora(), id);
+  if (m.tipo !== p.tipo) {
+    anotar(db, p.ficha_id, { texto: `Formato de «${m.titulo}»: ${FORMATOS[p.tipo]?.nombre ?? p.tipo} → ${FORMATOS[m.tipo].nombre} (skill ${skill}).` });
+  }
   if (cambios.estado === 'aprobada' && p.estado !== 'aprobada') {
     anotar(db, p.ficha_id, { texto: `Pieza aprobada: «${m.titulo}» (versión ${m.version}).` });
   }
@@ -124,6 +149,47 @@ const FORMATO_PPT = `FORMATO DE SALIDA (campo "markdown"): una presentación en 
 - Cada diapositiva empieza con "## Título de la diapositiva", seguido de 3 a 6 viñetas breves con "- ".
 - Notas del presentador: una línea que empiece con "Notas:" al final de la diapositiva.
 - Entre 8 y 14 diapositivas. Sin HTML ni imágenes.`;
+
+const ESQUEMA_HTML = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['html', 'pendientes_de_verificar'],
+  properties: {
+    html: { type: 'string' },
+    pendientes_de_verificar: { type: 'array', items: { type: 'string' } },
+  },
+};
+
+const IDENTIDAD_HTML = `IDENTIDAD ATENEA: Azul Sabiduría #1A365D (títulos y estructura), Oro Atenea #D4AF37 (detalles),
+Blanco Papiro #F8F9FA (fondos), Coral Estratégico #E05A47 solo como acento puntual. Títulos en
+Merriweather y cuerpo en Inter, declaradas con respaldo seguro: font-family: Merriweather, Georgia, serif /
+Inter, "Segoe UI", Arial, sans-serif (NO las cargues de internet).`;
+
+const FORMATO_INFOGRAFIA = `FORMATO DE SALIDA (campo "html"): UNA infografía como documento HTML completo en un solo archivo
+(empieza con <!DOCTYPE html>, lang="es", <meta charset="utf-8"> y viewport).
+- Todo el CSS va dentro de <style>. Sin JavaScript. Sin recursos de internet (ni fuentes, ni imágenes, ni CDN).
+- Pieza visual de UNA página: título potente, 4 a 7 bloques con jerarquía clara, datos o pasos destacados,
+  iconos hechos con CSS o caracteres simples, y un cierre con la idea clave. Poco texto: frases cortas.
+- Debe imprimirse en carta o A4 sin cortes: usa @page { size: auto; margin: 12mm }, colores con
+  print-color-adjust: exact, y evita que los bloques se partan (break-inside: avoid).
+- En pantalla, centrada con ancho máximo de 820px; en celular, una columna.
+- Pie discreto: «Atenea Grupo Educativo».
+${IDENTIDAD_HTML}`;
+
+const FORMATO_HERRAMIENTA = `FORMATO DE SALIDA (campo "html"): UNA herramienta interactiva como documento HTML completo en un
+solo archivo (empieza con <!DOCTYPE html>, lang="es", <meta charset="utf-8"> y viewport).
+- Todo el CSS en <style> y todo el JavaScript en <script> dentro del mismo archivo. Sin recursos de internet
+  (ni CDN, ni Tailwind, ni fuentes, ni imágenes externas): debe funcionar sin conexión con doble clic.
+- No uses alert(), confirm() ni prompt(): los mensajes van dentro de la página.
+- Valida las entradas y explica los errores en lenguaje de colega experta, sin jerga técnica.
+- Incluye, dentro de la herramienta: una descripción breve de para qué sirve, un «Cómo usarla» en 3 pasos
+  y una sección plegable «Solución de problemas».
+- Diseño limpio y accesible: etiquetas visibles en cada campo, botones claros, contraste suficiente,
+  usable en celular (una columna) y en computador.
+- Si la herramienta calcula algo, muestra cómo se llegó al resultado.
+- No guardes datos fuera del navegador; si conviene, ofrece un botón para imprimir o copiar el resultado.
+- Pie discreto: «Atenea Grupo Educativo».
+${IDENTIDAD_HTML}`;
 
 // Redacta (o rehace) una pieza. `indicacion` = lo que Mónica pide cambiar al rehacer.
 export async function elaborarPieza(db, id, { indicacion = '' } = {}, raizRepo) {
@@ -178,17 +244,25 @@ ${otras || '- (ninguna)'}
 INSTRUCCIONES DE LA SKILL DE PRODUCCIÓN (${skill.nombre}):
 ${skill.texto || '(sin instrucciones específicas)'}
 
-PIEZA A ELABORAR: «${p.titulo}» (${p.tipo === 'presentacion' ? 'presentación' : 'documento'})
+PIEZA A ELABORAR: «${p.titulo}» (formato de entrega: ${FORMATOS[p.tipo].nombre})
 ${p.instrucciones ? `Indicaciones de la fundadora para esta pieza: ${p.instrucciones}\n` : ''}${indicacion && p.contenido
-    ? `\nESTA ES UNA NUEVA VERSIÓN. Versión anterior:\n<<<\n${p.contenido.slice(0, 20000)}\n>>>\nCambios pedidos: ${indicacion}\nConserva lo que funciona y aplica exactamente los cambios pedidos.\n` : ''}
-${p.tipo === 'presentacion' ? FORMATO_PPT : FORMATO_DOC}`;
+    ? `\nESTA ES UNA NUEVA VERSIÓN. Versión anterior:\n<<<\n${p.contenido.slice(0, esHtml(p.tipo) ? 60000 : 20000)}\n>>>\nCambios pedidos: ${indicacion}\nConserva lo que funciona y aplica exactamente los cambios pedidos.\n` : ''}
+${{ presentacion: FORMATO_PPT, infografia: FORMATO_INFOGRAFIA, herramienta: FORMATO_HERRAMIENTA }[p.tipo] ?? FORMATO_DOC}`;
 
-  const r = await generarJson(db, { sistema, usuario, esquema: ESQUEMA, maxTokens: 16000, esfuerzo: 'high' });
-  const md = String(r.markdown ?? '').trim();
-  if (md.length < 200) throw new Error('La IA devolvió una pieza demasiado corta; intenta de nuevo o agrega indicaciones.');
+  const html = esHtml(p.tipo);
+  const r = await generarJson(db, { sistema, usuario, esquema: html ? ESQUEMA_HTML : ESQUEMA, maxTokens: html ? 32000 : 16000, esfuerzo: 'high' });
+  const texto = String((html ? r.html : r.markdown) ?? '').trim();
+  if (texto.length < (html ? 500 : 200)) throw new Error('La IA devolvió una pieza demasiado corta; intenta de nuevo o agrega indicaciones.');
+  if (html && !pareceHtml(texto)) throw new Error('La IA no devolvió un documento HTML completo; intenta de nuevo.');
   const pend = (r.pendientes_de_verificar ?? []).filter(Boolean);
+  // Una herramienta o infografía debe funcionar sin internet: se avisa si carga algo de fuera.
+  if (html) {
+    const externos = [...texto.matchAll(/<(?:script|link|img|iframe)[^>]+(?:src|href)=["'](https?:[^"']+)/gi)].map((m) => m[1]);
+    if (externos.length) pend.push(`Carga recursos de internet y no funcionará sin conexión: ${[...new Set(externos)].join(', ')}`);
+  }
   const ia = estadoIA(db).proveedor;
-  const contenido = pend.length ? `${md}\n\n## Pendientes de verificar (uso interno: borrar antes de entregar)\n\n${pend.map((x) => `- ${x}`).join('\n')}\n` : md;
+  const contenido = html ? conPendientesHtml(texto, pend)
+    : pend.length ? `${texto}\n\n## Pendientes de verificar (uso interno: borrar antes de entregar)\n\n${pend.map((x) => `- ${x}`).join('\n')}\n` : texto;
   transaccion(db, () => {
     db.prepare(`UPDATE piezas SET contenido = ?, anterior = ?, version = version + 1, estado = 'borrador',
         generado_por = ?, actualizado_en = ? WHERE id = ?`).run(contenido, p.contenido || null, `ia:${ia}`, ahora(), id);
@@ -201,6 +275,9 @@ ${p.tipo === 'presentacion' ? FORMATO_PPT : FORMATO_DOC}`;
 export function deshacerPieza(db, id) {
   const p = db.prepare('SELECT * FROM piezas WHERE id = ?').get(id);
   if (!p?.anterior) throw new Error('No hay una versión anterior para recuperar.');
+  if (esHtml(p.tipo) !== pareceHtml(p.anterior)) {
+    throw new Error('La versión anterior es de otro formato (se hizo antes de cambiar la skill) y no se puede recuperar aquí.');
+  }
   db.prepare("UPDATE piezas SET contenido = ?, anterior = ?, estado = 'borrador', actualizado_en = ? WHERE id = ?")
     .run(p.anterior, p.contenido, ahora(), id);
   return db.prepare('SELECT * FROM piezas WHERE id = ?').get(id);
