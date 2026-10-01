@@ -398,6 +398,60 @@ export function aPdf(pieza, ficha) {
   return listo;
 }
 
+// ---------------------------------------------------------------- Carrusel PDF (LinkedIn)
+// Cada «## Lámina N: titular» es una página 4:5 (1080 × 1350 px), el formato de documento de LinkedIn.
+export function laminas(markdown) {
+  const secciones = (markdown || '').split(/^## /m).slice(1);
+  return secciones.filter((s) => /^l[aá]mina\b/i.test(s)).map((s) => {
+    const [cab, ...resto] = s.split('\n');
+    const titular = cab.replace(/^l[aá]mina\s*\d*\s*[:.\-–]?\s*/i, '').trim();
+    const lineas = resto.map((l) => l.trim()).filter(Boolean).map((l) => l.replace(/^[-*]\s+|^\d+\.\s+/, ''))
+      .map((l) => quitarEntidades(textoPlano(marked.lexer(l)[0]?.tokens ?? [{ text: l }])));
+    return { titular, lineas };
+  }).filter((l) => l.titular || l.lineas.length);
+}
+
+export function aCarrusel(publicacion, firma) {
+  const lista = laminas(publicacion.contenido);
+  if (!lista.length) throw new Error('El carrusel no tiene láminas («## Lámina 1: …»).');
+  const W = 540;
+  const H = 675;
+  const doc = new PDFDocument({ size: [W, H], margin: 0, autoFirstPage: false,
+    info: { Title: publicacion.titulo, Author: firma, Creator: 'Atenea' } });
+  for (const [nombre, archivo] of Object.entries(FUENTES_PDF)) doc.registerFont(nombre, archivo);
+  const salida = [];
+  doc.on('data', (c) => salida.push(c));
+  const listo = new Promise((res, rej) => { doc.on('end', () => res(Buffer.concat(salida))); doc.on('error', rej); });
+  const M = 46;
+  lista.forEach((l, i) => {
+    const portada = i === 0;
+    const cierre = i === lista.length - 1 && lista.length > 1;
+    const oscura = portada || cierre;
+    doc.addPage();
+    doc.rect(0, 0, W, H).fill(oscura ? hex(AZUL) : '#F8F9FA');
+    doc.font('negrita').fontSize(9).fillColor(hex(ORO)).text(legible(firma).toUpperCase(), M, M, { characterSpacing: 1.5, width: W - 2 * M, lineBreak: false });
+    doc.rect(M, M + 18, 46, 3).fill(hex(ORO));
+    const tam = portada ? 38 : cierre ? 32 : 30;
+    doc.font('tit').fontSize(tam).fillColor(oscura ? '#FFFFFF' : hex(AZUL))
+      .text(legible(l.titular), M, portada ? 160 : 100, { width: W - 2 * M, lineGap: 4 });
+    let y = doc.y + 26;
+    for (const linea of l.lineas) {
+      if (!oscura) doc.circle(M + 5, y + 11, 4).fill(hex(ORO));
+      doc.font('normal').fontSize(oscura ? 18 : 20).fillColor(oscura ? '#D7E0EC' : hex(TEXTO))
+        .text(legible(linea), oscura ? M : M + 20, y, { width: W - 2 * M - (oscura ? 0 : 20), lineGap: 4 });
+      y = doc.y + 16;
+    }
+    doc.font('normal').fontSize(9).fillColor(oscura ? '#D7E0EC' : hex(GRIS))
+      .text(`${i + 1} / ${lista.length}`, M, H - M - 10, { width: 80, lineBreak: false });
+    if (!cierre) {
+      doc.font('negrita').fontSize(9).fillColor(oscura ? hex(ORO) : hex(AZUL))
+        .text('Desliza ›', W - M - 120, H - M - 10, { width: 120, align: 'right', lineBreak: false });
+    }
+  });
+  doc.end();
+  return listo;
+}
+
 // ---------------------------------------------------------------- HTML
 // Infografías y herramientas: el archivo es el propio HTML, sin los pendientes internos.
 export const aHtml = (pieza) => Buffer.from(sinPendientesHtml(pieza.contenido), 'utf8');

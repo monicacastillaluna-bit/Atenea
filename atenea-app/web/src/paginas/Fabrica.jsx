@@ -139,6 +139,7 @@ function Detalle({ id }) {
   const [nota, setNota] = useState('');
   const [comp, setComp] = useState({ veredicto: 'aprobada', texto: '' });
   const [comercial, setComercial] = useState(null);
+  const [ofertaInst, setOfertaInst] = useState(null);
   const [pestana, setPestana] = useState('ficha');
   const [ejecutar, ocupado] = useAccion();
 
@@ -204,6 +205,14 @@ function Detalle({ id }) {
                 <div className="fila fila-sep" style={{ marginTop: 8 }}>
                   <span className="tenue">{numero(f.ventas.unidades)} ventas · {numero(f.ventas.monto, 2)}</span>
                   <button className="boton mini" disabled={!comercial || ocupado} onClick={() => patch({ ...com, precio: com.precio === '' ? null : Number(com.precio) }, 'Datos comerciales guardados').then(() => setComercial(null))}>Guardar</button>
+                </div>
+                <label className="lbl" style={{ marginTop: 10 }}>Oferta institucional (licencia, taller, consultoría)
+                  <textarea className="campo" id="oferta-inst" rows={3} value={ofertaInst ?? f.contenido?.oferta_institucional ?? ''} onChange={(e) => setOfertaInst(e.target.value)}
+                    placeholder="Ej.: licencia para hasta 30 docentes + taller de 4 horas; precio a convenir." />
+                </label>
+                <div className="fila fila-sep" style={{ marginTop: 8 }}>
+                  <button className="boton mini" onClick={() => ir('contenido', { ficha: f.id, paquete: 1 })}>Contenido para redes</button>
+                  <button className="boton mini" disabled={ofertaInst === null || ocupado} onClick={() => patch({ contenido: { ...f.contenido, oferta_institucional: ofertaInst } }, 'Oferta institucional guardada').then(() => setOfertaInst(null))}>Guardar oferta</button>
                 </div>
               </div>
               <div className="tarjeta">

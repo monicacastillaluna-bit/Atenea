@@ -97,4 +97,72 @@ Guías de Estudio».
 
 ---
 
+## A5. Canal: contenido para LinkedIn y YouTube alineado con la ruta de autoridad ✅
+
+**Pedido de Mónica (2026-10-01):** en la idea original, el Canal dejaba todo listo para cada red
+social. Hoy solo registra el precio e importa las ventas de Hotmart.
+
+**Decisiones de Mónica (2026-10-01):**
+- **Redes:** solo **LinkedIn** (principal) y **YouTube**. Ni Instagram ni Facebook. Los grupos de
+  Facebook siguen como fuente del Radar para escuchar.
+- **Posicionamiento:** Mónica como referente de **IA y educación superior**, en B2B. Ana María trabaja
+  el B2C para todos los niveles.
+- **Objetivos:** consultorías, venta de productos, posicionamiento y monetización de YouTube.
+- **Los productos se venden a ambos públicos:** al docente, por Hotmart, y a la institución, con
+  licencia, taller y consultoría.
+- **La ruta de autoridad** es el artefacto fijado de Mónica. Lo que usa la app está resumido en
+  `Canal/Ruta_Autoridad_Academica_v1.md`.
+
+**Alcance propuesto:**
+1. **Skill de canal.** La ruta (`Canal/Ruta_Autoridad_Academica_v1.md`) es la guía que sigue la IA:
+   audiencias A/B/C, pilares, ganchos, formatos, ritmos y regla legal. Mismo principio que la
+   Fábrica: el formato corresponde a la red.
+2. **LinkedIn:**
+   - posts de texto listos para copiar (gancho, desarrollo y llamado a la acción);
+   - carruseles en PDF con la marca, de 6 a 10 láminas;
+   - edición de la newsletter;
+   - mensajes de conexión y de seguimiento sin venta en el primer contacto.
+3. **YouTube:**
+   - guion del video con los primeros 30 segundos (promesa, prueba y plan);
+   - 3 opciones de título y texto de la miniatura;
+   - descripción con capítulos y enlaces;
+   - 3 Shorts;
+   - piezas derivadas para LinkedIn: carrusel y post.
+4. **Paquete por producto**, desde la ficha:
+   - calentamiento sobre el dolor;
+   - lanzamiento;
+   - prueba social;
+   - webinar con su calendario de 21 días.
+
+   Viene en dos versiones de oferta: docente (Hotmart) e institución (licencia, taller o consultoría).
+5. **Contenido de autoridad sin producto.** El Radar sugiere temas a partir de las señales validadas
+   más fuertes, organizados por pilar.
+6. **Calendario editorial:**
+   - estados: borrador → aprobado → publicado;
+   - el enlace a la publicación;
+   - métricas que se anotan a mano (las que la ruta dice que mandan en cada red).
+7. **Seguimiento de consultorías:** un registro sencillo de contactos institucionales con sus etapas
+   (conversación → reunión → propuesta → contrato) y su origen (LinkedIn, YouTube, webinar).
+8. **Sin publicación automática:** la app deja todo listo para copiar; Mónica revisa y publica.
+
+**Decidido por Mónica (2026-10-01):**
+- **La IA atraviesa los cuatro pilares;** no es un pilar aparte.
+- **El canal de YouTube conserva su nombre, *Analítica Académica*.**
+- **El artefacto de la ruta se actualizó** (versión 3, 2026-10-01): solo LinkedIn y YouTube, y el plan
+  de 12 semanas se redistribuyó. Las semanas 5 a 8 ahora son de YouTube.
+
+**Implementado en la versión 1.6.0 (2026-10-01):**
+- Páginas **Canal → LinkedIn y YouTube** y **Canal → Consultorías**.
+- Tablas `publicaciones` y `contactos`.
+- Formatos con su red, en `server/lib/formatosCanal.js`. Formatos de YouTube: solo video; los Shorts
+  van dentro del paquete del video.
+- Paquete de 11 publicaciones por producto alrededor de la fecha del webinar.
+- Temas sugeridos por el Radar.
+- «Derivar para LinkedIn» desde un video.
+- Carrusel PDF 4:5 con firma configurable.
+- Métricas que se anotan a mano.
+- Oferta institucional en la ficha.
+
+---
+
 *Siguientes ajustes: se agregan aquí a medida que avance la revisión.*

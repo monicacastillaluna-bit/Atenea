@@ -11,8 +11,13 @@ import { calcularSaliencia } from './lib/saliencia.js';
 import { ESTADOS, obtenerFicha, crearFicha, actualizarFicha, anotar, registrarCompuerta, proponerFicha } from './lib/fabrica.js';
 import { importarVentas } from './lib/canal.js';
 import { listarPiezas, prepararPiezas, crearPieza, actualizarPieza, elaborarPieza, deshacerPieza } from './lib/produccion.js';
-import { generarArchivo, archivoPieza, extensiones, kitZip, TIPOS_MIME } from './lib/documentos.js';
+import { aCarrusel, generarArchivo, archivoPieza, extensiones, kitZip, TIPOS_MIME } from './lib/documentos.js';
 import { FORMATOS, formatoDeSkill, esSkillDePieza } from './lib/formatos.js';
+import { FORMATOS_CANAL, OBJETIVOS_CANAL, OFERTAS, ETAPAS_CONTACTO, METRICAS, REDES } from './lib/formatosCanal.js';
+import {
+  listarPublicaciones, crearPublicacion, actualizarPublicacion, deshacerPublicacion, elaborarPublicacion,
+  paqueteProducto, derivarDeVideo, sugerirTemas,
+} from './lib/contenido.js';
 import { paqueteNotebookLM } from './lib/notebooklm.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
@@ -311,6 +316,80 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
     res.setHeader('Content-Disposition', `${modo}; filename="${nombre}"; filename*=UTF-8''${encodeURIComponent(nombre)}`);
     res.send(buf);
   });
+  // ---------- Canal: contenido para LinkedIn y YouTube (A5)
+  const cliente = (fn) => async (req, res) => {
+    try {
+      res.json(await fn(req, res));
+    } catch (e) {
+      if (e instanceof ErrorIA || e instanceof ErrorCliente) throw e;
+      throw new ErrorCliente(e.message);
+    }
+  };
+  api.get('/canal/catalogo', (req, res) => res.json({
+    redes: REDES, formatos: FORMATOS_CANAL, objetivos: OBJETIVOS_CANAL, ofertas: OFERTAS, etapas: ETAPAS_CONTACTO, metricas: METRICAS,
+  }));
+  api.get('/publicaciones', (req, res) => res.json(listarPublicaciones(db, req.query)));
+  api.post('/publicaciones', cliente((req, res) => { res.status(201); return crearPublicacion(db, req.body); }));
+  api.patch('/publicaciones/:id', cliente((req) => {
+    const permitidos = ['ficha_id', 'formato', 'red', 'objetivo', 'oferta', 'titulo', 'instrucciones', 'estado', 'contenido',
+      'fecha_plan', 'publicada_en', 'url', 'metricas'];
+    const r = actualizarPublicacion(db, entero(req.params.id), Object.fromEntries(Object.entries(req.body).filter(([k]) => permitidos.includes(k))));
+    exigir(r, 'Publicación no encontrada');
+    return r;
+  }));
+  api.delete('/publicaciones/:id', (req, res) => {
+    db.prepare('DELETE FROM publicaciones WHERE id = ?').run(entero(req.params.id));
+    res.status(204).end();
+  });
+  api.post('/publicaciones/:id/elaborar', cliente((req) => elaborarPublicacion(db, entero(req.params.id), { indicacion: req.body?.indicacion?.trim() ?? '' }, raizRepo)));
+  api.post('/publicaciones/:id/deshacer', cliente((req) => deshacerPublicacion(db, entero(req.params.id))));
+  api.post('/publicaciones/:id/derivar', cliente((req) => derivarDeVideo(db, entero(req.params.id))));
+  api.get('/publicaciones/:id/carrusel', async (req, res) => {
+    const p = db.prepare('SELECT * FROM publicaciones WHERE id = ?').get(entero(req.params.id));
+    exigir(p, 'Publicación no encontrada');
+    exigir(p.formato === 'linkedin_carrusel', 'Solo los carruseles se descargan en PDF');
+    let buf;
+    try {
+      buf = await aCarrusel(p, leerAjuste(db, 'canal_firma', AJUSTES_INICIALES.canal_firma));
+    } catch (e) {
+      throw new ErrorCliente(e.message);
+    }
+    const nombre = `Carrusel_${p.titulo.normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^\w\s-]/g, '').trim().replace(/\s+/g, '_').slice(0, 60)}.pdf`;
+    res.setHeader('Content-Type', 'application/pdf');
+    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"`);
+    res.send(buf);
+  });
+  api.post('/fichas/:id/paquete-canal', cliente((req) => paqueteProducto(db, entero(req.params.id), { fecha: req.body?.fecha })));
+  api.post('/canal/temas', cliente((req) => sugerirTemas(db, raizRepo, { cantidad: Math.min(10, entero(req.body?.cantidad) || 6) })));
+
+  // ---------- Canal: seguimiento de consultorías
+  const COLS_CONTACTO = ['nombre', 'cargo', 'institucion', 'pais', 'origen', 'etapa', 'ficha_id', 'valor', 'moneda', 'proximo_paso', 'fecha_proximo', 'notas'];
+  const contacto = (id) => db.prepare(`SELECT c.*, f.titulo AS ficha_titulo FROM contactos c LEFT JOIN fichas f ON f.id = c.ficha_id WHERE c.id = ?`).get(id);
+  api.get('/contactos', (req, res) => res.json(db.prepare(`SELECT c.*, f.titulo AS ficha_titulo FROM contactos c
+      LEFT JOIN fichas f ON f.id = c.ficha_id ORDER BY CASE c.etapa WHEN 'perdido' THEN 1 ELSE 0 END, COALESCE(c.fecha_proximo, '9999'), c.id DESC`).all()));
+  api.post('/contactos', (req, res) => {
+    exigir(req.body.nombre?.trim(), 'El contacto necesita un nombre');
+    exigir(!req.body.etapa || ETAPAS_CONTACTO[req.body.etapa], 'Etapa inválida');
+    const cols = COLS_CONTACTO.filter((c) => req.body[c] !== undefined);
+    const t = ahora();
+    const r = db.prepare(`INSERT INTO contactos (${[...cols, 'creado_en', 'actualizado_en'].join(',')}) VALUES (${[...cols, 1, 2].map(() => '?').join(',')})`)
+      .run(...cols.map((c) => req.body[c]), t, t);
+    res.status(201).json(contacto(r.lastInsertRowid));
+  });
+  api.patch('/contactos/:id', (req, res) => {
+    const cols = COLS_CONTACTO.filter((c) => req.body[c] !== undefined);
+    exigir(cols.length, 'No hay cambios');
+    exigir(!req.body.etapa || ETAPAS_CONTACTO[req.body.etapa], 'Etapa inválida');
+    exigir(contacto(entero(req.params.id)), 'Contacto no encontrado');
+    db.prepare(`UPDATE contactos SET ${cols.map((c) => `${c} = ?`).join(', ')}, actualizado_en = ? WHERE id = ?`)
+      .run(...cols.map((c) => req.body[c]), ahora(), entero(req.params.id));
+    res.json(contacto(entero(req.params.id)));
+  });
+  api.delete('/contactos/:id', (req, res) => {
+    db.prepare('DELETE FROM contactos WHERE id = ?').run(entero(req.params.id));
+    res.status(204).end();
+  });
+
   api.get('/fichas/:id/kit', async (req, res) => {
     const f = fichaPlana(entero(req.params.id));
     exigir(f, 'Ficha no encontrada');
