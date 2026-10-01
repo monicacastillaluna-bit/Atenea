@@ -1,6 +1,6 @@
 # Manual de usuario · Atenea, centro de mando interno
 
-**Versión del manual:** 1.5 (octubre de 2026) · **Para:** Mónica y el equipo de Atenea.
+**Versión del manual:** 1.6 (octubre de 2026) · **Para:** Mónica y el equipo de Atenea.
 No hace falta saber programar para usar la app.
 
 > Las imágenes de este manual usan **datos de ejemplo**. Tus pantallas mostrarán tus propias señales
@@ -17,7 +17,7 @@ No hace falta saber programar para usar la app.
 5. [Radar: señales, matriz, taxonomía y fuentes](#5-radar)
 6. [Cerebro: normativa y skills](#6-cerebro)
 7. [Fábrica: fichas, compuertas y producción de piezas](#7-fábrica)
-8. [Canal: ventas](#8-canal-ventas)
+8. [Canal: LinkedIn y YouTube, consultorías y ventas](#8-canal-linkedin-y-youtube-consultorías-y-ventas)
 9. [Ajustes y respaldo](#9-ajustes-y-respaldo)
 10. [Rutinas recomendadas](#10-rutinas-recomendadas)
 11. [Actualizar la app](#11-actualizar-la-app)
@@ -45,7 +45,7 @@ El recorrido completo tiene cuatro etapas, que corresponden a los cuatro módulo
 | 1 | **Radar** | Recoge publicaciones (señales), la IA las clasifica y tú confirmas. |
 | 2 | **Cerebro** | Guarda la normativa por país y las skills de producción. |
 | 3 | **Fábrica** | Convierte un dolor en una ficha de producto con 3 compuertas y **elabora sus piezas** en Word y PowerPoint. |
-| 4 | **Canal** | Registra lo vendido, y las ventas vuelven a alimentar el Radar. |
+| 4 | **Canal** | Prepara tu contenido para LinkedIn y YouTube, sigue las consultorías y registra lo vendido. Las ventas vuelven a alimentar el Radar. |
 
 **Regla de oro: la IA propone y tú decides.** Ninguna ficha avanza sin tu veredicto escrito.
 
@@ -93,14 +93,14 @@ A la izquierda está el **menú**, agrupado por módulo:
 | **Radar** | Señales · Matriz de saliencia · Taxonomía de dolores · Fuentes y recolección |
 | **Cerebro** | Normativa por país · Skills de producción |
 | **Fábrica** | Fichas de producto |
-| **Canal** | Ventas |
+| **Canal** | LinkedIn y YouTube · Consultorías · Ventas |
 | **Sistema** | Ajustes y respaldo |
 
 Abajo, en el menú, siempre ves cuatro datos:
 - qué IA está activa y si tiene clave;
 - cuándo fue la última recolección;
 - si la copia en Firestore está configurada;
-- la **versión de la app** (por ejemplo, 1.5.0). Sirve para confirmar que una actualización quedó
+- la **versión de la app** (por ejemplo, 1.6.0). Sirve para confirmar que una actualización quedó
   aplicada.
 
 **Los avisos** aparecen abajo a la derecha: **azules** si algo salió bien, **rojos** si hubo un
@@ -468,6 +468,10 @@ comprueba que dicen lo que la ficha afirma.
 **Panel derecho: Canal**
 - Registra el **precio**, la **moneda** y la **URL de venta**. Pulsa **Guardar**.
 - Aquí también ves cuántas ventas lleva la ficha.
+- **Oferta institucional:** qué se le ofrece a una universidad (licencia, taller, consultoría).
+  Pulsa **Guardar oferta**. La usa el contenido de lanzamiento.
+- **Contenido para redes:** abre la página de LinkedIn y YouTube para preparar el paquete de
+  lanzamiento de este producto.
 
 **Panel derecho: Bitácora**
 - Es el historial de la ficha: creación, cambios de estado, veredictos y tus notas.
@@ -619,7 +623,87 @@ lo haga con la skill de NotebookLM.
 
 ---
 
-## 8. Canal: ventas
+## 8. Canal: LinkedIn y YouTube, consultorías y ventas
+
+El Canal tiene tres páginas en el menú: **LinkedIn y YouTube**, **Consultorías** y **Ventas**.
+
+### 8.1 LinkedIn y YouTube
+
+Aquí la app redacta tu contenido siguiendo tu **ruta de autoridad académica**. La IA usa el resumen
+de la ruta que está en `Canal/Ruta_Autoridad_Academica_v1.md`, tu voz y la regla legal. Tú revisas,
+copias y publicas: **nada se publica solo**.
+
+![Contenido para LinkedIn y YouTube](manual/img/17-contenido.jpg)
+
+**Lo que tiene en cuenta la IA al redactar:**
+- escribe en primera persona, para tu perfil;
+- te presenta como referente de IA y educación superior, con la IA atravesando tus cuatro pilares;
+- le habla a quien decide en la universidad;
+- en el contenido de autoridad no vende y solo cita normas de Colombia;
+- nunca sugiere aval de una autoridad;
+- lo que no puede respaldar lo marca en **Pendientes de verificar**.
+
+**Formatos.** La red sale del formato; no se elige aparte:
+
+| Red | Formato | Qué te entrega |
+|---|---|---|
+| LinkedIn | Post de texto | El post (gancho en las dos primeras líneas) y el primer comentario |
+| LinkedIn | Carrusel PDF | Las láminas para revisar y el **PDF con tu marca** (formato 4:5) listo para subir como documento, más el texto que lo acompaña |
+| LinkedIn | Edición de newsletter | La edición completa con su llamado a la acción |
+| LinkedIn | Mensajes de conexión y seguimiento | Invitación de conexión y 3 mensajes, sin vender en el primero |
+| YouTube | Video | 3 títulos, texto de la miniatura, primeros 30 segundos, guion, descripción, capítulos, 3 Shorts e ideas para LinkedIn |
+
+**Tres formas de llenar el calendario:**
+1. **Temas del Radar:** la app lee las señales más fuertes y te propone temas de autoridad. Pulsa
+   **Agregar al calendario** en los que te sirvan.
+2. **Paquete de un producto:** elige un producto con la Compuerta 1 aprobada y la fecha del webinar
+   o lanzamiento. La app crea 11 publicaciones con el calendario de tu ruta:
+   - calentamiento desde 21 días antes (posts, carrusel, video y newsletter);
+   - invitación y recordatorio del webinar;
+   - lanzamiento con **oferta para el docente** y **oferta institucional**;
+   - mensajes de seguimiento a directivos;
+   - prueba social.
+
+   La oferta institucional se escribe en la ficha del producto, en la tarjeta **Canal**. Ahí también
+   está el botón **Contenido para redes**.
+3. **Nueva publicación:** una suelta, con el tema, el formato y la fecha que quieras.
+
+**Redactar y revisar:**
+1. Pulsa **Redactar pendientes** para que la IA las redacte una por una, o abre una y pulsa
+   **Redactar con IA**.
+2. En **Listo para copiar**, cada parte (el post, el primer comentario, la descripción del video…)
+   tiene su botón **Copiar**, que copia el texto sin formato, listo para pegar en la red.
+
+   ![Una publicación lista para copiar](manual/img/18-publicacion.jpg)
+3. Corrige en **Editar texto** o pide cambios con **Rehacer**.
+4. Resuelve los **Pendientes de verificar** y pulsa **Aprobar**.
+5. En los carruseles, pulsa **Descargar carrusel PDF**. Las láminas llevan la firma que escribas en
+   **Firma de los carruseles**.
+6. De un video, **Derivar para LinkedIn** crea un carrusel, un post y una newsletter basados en él,
+   como pide tu ruta (el video es la pieza madre).
+
+**Después de publicar:** abre la publicación, pega el enlace, pulsa **Marcar como publicada** y, a
+los 7 días, anota las métricas. En LinkedIn: impresiones, reacciones, comentarios y conversaciones
+por mensaje. En YouTube: vistas, retención, suscriptores y clics al enlace.
+
+### 8.2 Consultorías
+
+Es el seguimiento de los contactos institucionales que llegan por LinkedIn, YouTube o un webinar.
+Cada contacto avanza por etapas: **conversación → reunión → propuesta → contrato** (o perdido).
+
+![Consultorías](manual/img/19-consultorias.jpg)
+
+- Arriba ves cuántos contactos hay en cada etapa y el valor estimado.
+- Cada contacto guarda:
+  - cargo, institución y país;
+  - por dónde llegó;
+  - el producto o servicio de interés;
+  - el valor estimado;
+  - el **próximo paso con fecha** (si la fecha ya pasó, se ve en rojo).
+- Guarda solo datos profesionales que la persona te compartió. Viven en tu computador y en tu copia de
+  Firestore.
+
+### 8.3 Ventas
 
 ![Ventas](manual/img/12-ventas.jpg)
 

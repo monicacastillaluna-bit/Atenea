@@ -97,7 +97,7 @@ Guías de Estudio».
 
 ---
 
-## A5. Canal: contenido para LinkedIn y YouTube alineado con la ruta de autoridad 📋
+## A5. Canal: contenido para LinkedIn y YouTube alineado con la ruta de autoridad ✅
 
 **Pedido de Mónica (2026-10-01):** en la idea original, el Canal dejaba todo listo para cada red
 social. Hoy solo registra el precio e importa las ventas de Hotmart.
@@ -151,7 +151,17 @@ social. Hoy solo registra el precio e importa las ventas de Hotmart.
 - **El artefacto de la ruta se actualizó** (versión 3, 2026-10-01): solo LinkedIn y YouTube, y el plan
   de 12 semanas se redistribuyó. Las semanas 5 a 8 ahora son de YouTube.
 
-**Estado:** listo para construir cuando Mónica lo pida.
+**Implementado en la versión 1.6.0 (2026-10-01):**
+- Páginas **Canal → LinkedIn y YouTube** y **Canal → Consultorías**.
+- Tablas `publicaciones` y `contactos`.
+- Formatos con su red, en `server/lib/formatosCanal.js`. Formatos de YouTube: solo video; los Shorts
+  van dentro del paquete del video.
+- Paquete de 11 publicaciones por producto alrededor de la fecha del webinar.
+- Temas sugeridos por el Radar.
+- «Derivar para LinkedIn» desde un video.
+- Carrusel PDF 4:5 con firma configurable.
+- Métricas que se anotan a mano.
+- Oferta institucional en la ficha.
 
 ---
 

@@ -10,6 +10,8 @@ import Normativa from './paginas/Normativa.jsx';
 import Skills from './paginas/Skills.jsx';
 import Fabrica from './paginas/Fabrica.jsx';
 import Canal from './paginas/Canal.jsx';
+import Contenido from './paginas/Contenido.jsx';
+import Consultorias from './paginas/Consultorias.jsx';
 import Ajustes from './paginas/Ajustes.jsx';
 
 const MENU = [
@@ -18,7 +20,7 @@ const MENU = [
     ['taxonomia', 'Taxonomía de dolores', Taxonomia], ['fuentes', 'Fuentes y recolección', Fuentes]]],
   ['Cerebro', [['normativa', 'Normativa por país', Normativa], ['skills', 'Skills de producción', Skills]]],
   ['Fábrica', [['fabrica', 'Fichas de producto', Fabrica]]],
-  ['Canal', [['canal', 'Ventas', Canal]]],
+  ['Canal', [['contenido', 'LinkedIn y YouTube', Contenido], ['consultorias', 'Consultorías', Consultorias], ['canal', 'Ventas', Canal]]],
   ['Sistema', [['ajustes', 'Ajustes y respaldo', Ajustes]]],
 ];
 const PAGINAS = Object.fromEntries(MENU.flatMap(([, items]) => items.map(([id, , C]) => [id, C])));

@@ -1,6 +1,6 @@
 {
   "name": "atenea-app",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "private": true,
   "description": "Centro de mando interno de Atenea Grupo Educativo: Radar de dolores docentes de educación superior, Cerebro, Fábrica y Canal. Uso local.",
   "type": "module",

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { sembrar } from './semillas.js';
 import { FORMATOS, esHtml, formatoDeSkill, pareceHtml } from './formatos.js';
+import { FORMATOS_CANAL, OBJETIVOS_CANAL, ETAPAS_CONTACTO } from './formatosCanal.js';
 
 // Tipos de fuente admitidos. Al agregar uno, abrirDb migra las bases existentes.
 export const TIPOS_FUENTE = ['google_news', 'reddit', 'rss', 'openalex'];
@@ -121,6 +122,46 @@ CREATE TABLE IF NOT EXISTS fichas (
   actualizado_en TEXT NOT NULL
 );
 ${tablaPiezas('piezas')}
+CREATE TABLE IF NOT EXISTS publicaciones (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  ficha_id INTEGER REFERENCES fichas(id) ON DELETE SET NULL,
+  origen_id INTEGER REFERENCES publicaciones(id) ON DELETE SET NULL,
+  red TEXT NOT NULL CHECK (red IN ('linkedin','youtube')),
+  formato TEXT NOT NULL CHECK (formato IN (${Object.keys(FORMATOS_CANAL).map((t) => `'${t}'`).join(',')})),
+  objetivo TEXT NOT NULL DEFAULT 'autoridad' CHECK (objetivo IN (${Object.keys(OBJETIVOS_CANAL).map((t) => `'${t}'`).join(',')})),
+  oferta TEXT CHECK (oferta IN ('docente','institucion','ambas')),
+  titulo TEXT NOT NULL,
+  instrucciones TEXT NOT NULL DEFAULT '',
+  senales TEXT NOT NULL DEFAULT '[]',
+  estado TEXT NOT NULL DEFAULT 'pendiente' CHECK (estado IN ('pendiente','borrador','aprobada','publicada')),
+  contenido TEXT NOT NULL DEFAULT '',
+  anterior TEXT,
+  version INTEGER NOT NULL DEFAULT 0,
+  generado_por TEXT,
+  fecha_plan TEXT,
+  publicada_en TEXT,
+  url TEXT,
+  metricas TEXT NOT NULL DEFAULT '{}',
+  creado_en TEXT NOT NULL,
+  actualizado_en TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS contactos (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nombre TEXT NOT NULL,
+  cargo TEXT,
+  institucion TEXT,
+  pais TEXT,
+  origen TEXT NOT NULL DEFAULT 'linkedin',
+  etapa TEXT NOT NULL DEFAULT 'conversacion' CHECK (etapa IN (${Object.keys(ETAPAS_CONTACTO).map((t) => `'${t}'`).join(',')})),
+  ficha_id INTEGER REFERENCES fichas(id) ON DELETE SET NULL,
+  valor REAL,
+  moneda TEXT,
+  proximo_paso TEXT,
+  fecha_proximo TEXT,
+  notas TEXT,
+  creado_en TEXT NOT NULL,
+  actualizado_en TEXT NOT NULL
+);
 CREATE TABLE IF NOT EXISTS bitacora (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   ficha_id INTEGER NOT NULL REFERENCES fichas(id) ON DELETE CASCADE,
@@ -150,7 +191,7 @@ CREATE TABLE IF NOT EXISTS ajustes (
 
 // Tablas en el orden en que se exportan/restauran (respetando las referencias).
 export const TABLAS = ['paises', 'dolores', 'fuentes', 'senales', 'ejecuciones',
-  'normativa', 'fichas', 'piezas', 'bitacora', 'ventas', 'ajustes'];
+  'normativa', 'fichas', 'piezas', 'publicaciones', 'contactos', 'bitacora', 'ventas', 'ajustes'];
 
 // Campos guardados como texto JSON en SQLite.
 const CAMPOS_JSON = new Set(['palabras_clave', 'config', 'dolores', 'dolores_rel', 'contenido']);

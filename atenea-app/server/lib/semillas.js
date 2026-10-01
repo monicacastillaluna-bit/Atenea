@@ -191,6 +191,7 @@ export const AJUSTES_INICIALES = {
   clasificar_auto: true,
   vida_media_dias: 60,
   lote_clasificacion: 8,
+  canal_firma: 'Mónica Castilla',
 };
 
 function sembrarFuentes(db, bandera, fuentes) {

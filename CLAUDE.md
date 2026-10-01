@@ -115,6 +115,11 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   Siguiente: etapas 4-6 (PET, PMG, producción). Fase 5 del Programa Sintético pendiente de
   ingesta para la v1.1 del kit.
 - `Canal/Plan_Lanzamiento_Kit_NEM_v1.md` — arranque de Fase 4 (2026-07-18): funnel patrón PlanifiKIA, precio hipótesis USD 20-25, métricas de piloto, circuito comprador→Radar y checklist de 10 tareas con responsables. Condición previa: Compuerta 3 + visto legal del copy.
+- `Canal/Ruta_Autoridad_Academica_v1.md` — resumen de la «Ruta de Autoridad Académica» de Mónica (artefacto
+  fijado en claude.ai) con sus decisiones del 2026-10-01: solo LinkedIn y YouTube, posicionamiento B2B como
+  referente de IA y educación superior, IA transversal a los 4 pilares, canal «Analítica Académica», venta a
+  docente (Hotmart) e institución. La IA del Canal de `atenea-app` lo lee como su guía: mantenerlo sincronizado
+  con el artefacto.
 - `Ciclo_Actualizacion_v1.md` — cómo se mantienen actualizados la normativa y los dolores
   (2026-07-16): ronda mensual de vigencia (Cerebro, ~1 h, usa `vigencia`/`fuente`/
   `producto_destino`), ronda mensual de saliencia (Radar, semana 1 del ciclo operativo), pulso
@@ -137,8 +142,10 @@ Plan de trabajo completo: [Plan_de_Trabajo_Ecosistema_Edtech_v2.pdf](Plan_de_Tra
   elabora cada pieza tras la Compuerta 1 en el formato que determina su skill (regla de Mónica, 2026-10-01: el formato
   siempre corresponde a lo que crea la skill; tabla en `atenea-app/server/lib/formatos.js`): Word, Word + PDF
   (guías), PowerPoint, infografía HTML imprimible o herramienta web HTML sin internet (SKL-DIS-003), con identidad
-  Atenea y kit en ZIP → ventas (CSV de
-  Hotmart) que realimentan el Radar. Copia opcional en Firestore (`artifacts/athenea/public/data/app_*`).
+  Atenea y kit en ZIP → Canal: contenido para LinkedIn y YouTube redactado con la ruta de autoridad de Mónica
+  (`Canal/Ruta_Autoridad_Academica_v1.md`; solo esas dos redes, B2B, IA transversal a los pilares, canal de YouTube
+  «Analítica Académica»), paquete de lanzamiento por producto con oferta docente e institucional, seguimiento de
+  consultorías y ventas (CSV de Hotmart) que realimentan el Radar. Copia opcional en Firestore (`artifacts/athenea/public/data/app_*`).
   **Decisión de Mónica (2026-09-25): el Radar del software se enfoca SOLO en docentes de educación
   superior**, en 19 países (17 de Latinoamérica y el Caribe + México + España), con taxonomía propia
   ES01-ES09 (propuesta v1, por validar con el panel; distinta de la D1-D7 de básica). La normativa
