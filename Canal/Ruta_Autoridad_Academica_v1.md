@@ -10,6 +10,9 @@ ruta completa, con listas de verificación y el plan de 12 semanas, sigue vivien
 - **Posicionamiento:** Mónica como **referente de IA y educación superior**, en B2B. Ana María trabaja
   el B2C para todos los niveles educativos.
 - **Objetivos:** consultorías y venta de productos; posicionamiento y monetización en YouTube.
+- **La IA atraviesa los cuatro pilares;** no es un pilar aparte.
+- **El canal de YouTube conserva su nombre, *Analítica Académica*.**
+- **El artefacto se actualizó con estas decisiones** (versión 3, 2026-10-01).
 - **Venta de los productos de educación superior por dos vías:**
   - al **docente**, por Hotmart;
   - a la **institución**, con licencias, talleres y consultoría.
@@ -39,6 +42,8 @@ ruta completa, con listas de verificación y el plan de 12 semanas, sigue vivien
     planes de mejoramiento.
   - Formación docente.
   - Analítica académica.
+  - **La IA no es un pilar aparte:** aparece en los cuatro, mostrando cómo usarla con criterio en
+    cada uno.
   - Un 10 % de contenido personal o detrás de cámaras.
 - **Tiempo:** 5 a 6 horas por semana, en bloques fijos.
   - 1 h de planeación con lo que genera la edtech.

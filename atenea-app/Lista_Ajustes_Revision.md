@@ -97,7 +97,7 @@ Guías de Estudio».
 
 ---
 
-## A5. Canal: contenido para LinkedIn y YouTube alineado con la ruta de autoridad ⏳
+## A5. Canal: contenido para LinkedIn y YouTube alineado con la ruta de autoridad 📋
 
 **Pedido de Mónica (2026-10-01):** en la idea original, el Canal dejaba todo listo para cada red
 social. Hoy solo registra el precio e importa las ventas de Hotmart.
@@ -145,16 +145,13 @@ social. Hoy solo registra el precio e importa las ventas de Hotmart.
    (conversación → reunión → propuesta → contrato) y su origen (LinkedIn, YouTube, webinar).
 8. **Sin publicación automática:** la app deja todo listo para copiar; Mónica revisa y publica.
 
-**Por decidir antes de construir:**
-- **Pilar de IA.** La ruta tiene 4 pilares (gestión universitaria, aseguramiento de la calidad,
-  formación docente, analítica académica), pero el posicionamiento nuevo es «IA y educación
-  superior». ¿Se agrega «IA aplicada a la educación superior» como quinto pilar, o la IA atraviesa
-  los cuatro?
-- **Marca del canal de YouTube.** La ruta habla del canal *Analítica Académica*, pero el acta de
-  Fase 0 dice que Analítica Académica opera de forma independiente de Atenea. ¿El canal sigue con
-  ese nombre, pasa a su nombre personal o se crea uno nuevo?
-- **Ruta y nuevas decisiones.** La ruta todavía incluye Instagram y Facebook en el plan de 12
-  semanas. ¿Actualizamos el artefacto para dejar solo LinkedIn y YouTube?
+**Decidido por Mónica (2026-10-01):**
+- **La IA atraviesa los cuatro pilares;** no es un pilar aparte.
+- **El canal de YouTube conserva su nombre, *Analítica Académica*.**
+- **El artefacto de la ruta se actualizó** (versión 3, 2026-10-01): solo LinkedIn y YouTube, y el plan
+  de 12 semanas se redistribuyó. Las semanas 5 a 8 ahora son de YouTube.
+
+**Estado:** listo para construir cuando Mónica lo pida.
 
 ---
 
