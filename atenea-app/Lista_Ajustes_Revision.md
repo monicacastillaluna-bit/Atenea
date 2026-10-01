@@ -28,12 +28,12 @@ que se está creando con la skill.
 - Las piezas que ya existen con una combinación inválida se corrigen al formato de su skill y se avisa
   en la bitácora.
 
-**Correlación skill → formato (propuesta, por confirmar los ⏳):**
+**Correlación skill → formato (decidida el 2026-10-01):**
 
 | Skill | Qué crea | Formato de entrega |
 |---|---|---|
-| SKL-PRO-001 Infografías | Pieza visual de una página | ⏳ ver A3 |
-| SKL-PRO-002 PDFs y guías de estudio | Guía, plantilla, banco, manual | Word (editable) ⏳ y PDF, ver A4 |
+| SKL-PRO-001 Infografías | Pieza visual de una página | **Infografía (.html imprimible)**, ver A3 |
+| SKL-PRO-002 PDFs y guías de estudio | Guía, plantilla, banco, manual | Word (editable) **y PDF**, ver A4 |
 | SKL-PRO-003 Presentaciones | Diapositivas | PowerPoint |
 | SKL-PRO-004 Workbooks | Cuaderno de trabajo | Word |
 | SKL-PRO-005 Guiones de video y audio | Guion | Word |
@@ -67,18 +67,23 @@ que se está creando con la skill.
   - abrirla en el celular;
   - abrirla sin internet.
 
-## A3. Infografías: ¿qué formato? ⏳
+## A3. Infografías: página visual en HTML imprimible 📋
 
-Una infografía no es un documento Word. Opciones:
-- **(a) Página visual en HTML imprimible**, que se guarda como PDF desde el navegador.
-- **(b) Imagen PNG**, que exige un motor de dibujo adicional en la app.
-- **(c) Contenido estructurado** (textos, datos, jerarquía) para montarla en Canva.
+**Decisión de Mónica (2026-10-01): opción (a).** Una infografía no es un documento Word.
+- **Formato:** una página visual en HTML con la identidad Atenea (paleta, Merriweather e Inter),
+  diseñada para imprimir en carta o A4 sin cortes y guardarla como PDF desde el navegador.
+- **En la app:** vista previa dentro de *Producción*; descarga del `.html`; entra en el kit ZIP.
+- **Descartadas:** (b) imagen PNG, porque exige un motor de dibujo adicional; (c) contenido para
+  montar en Canva.
 
-## A4. Guías: ¿también en PDF? ⏳
+## A4. Guías: Word y PDF a la vez 📋
 
-La skill SKL-PRO-002 se llama «Crear **PDFs** y Guías de Estudio», pero la app entrega Word. Opciones:
-- **(a) Word y PDF a la vez:** Word para editar y PDF para vender.
-- **(b) Solo Word:** el PDF se exporta desde Word al final.
+**Decisión de Mónica (2026-10-01): opción (a).** La skill SKL-PRO-002 se llama «Crear **PDFs** y
+Guías de Estudio».
+- **Qué se entrega:** Word para editar y PDF para vender, generados a la vez y con la misma identidad
+  Atenea.
+- **Cómo se genera el PDF:** la app lo produce sola, sin depender de Word ni de LibreOffice.
+- **En el kit ZIP:** van los dos archivos.
 
 ---
 
