@@ -11,7 +11,8 @@ import { calcularSaliencia } from './lib/saliencia.js';
 import { ESTADOS, obtenerFicha, crearFicha, actualizarFicha, anotar, registrarCompuerta, proponerFicha } from './lib/fabrica.js';
 import { importarVentas } from './lib/canal.js';
 import { listarPiezas, prepararPiezas, crearPieza, actualizarPieza, elaborarPieza, deshacerPieza } from './lib/produccion.js';
-import { generarArchivo, archivoPieza, kitZip } from './lib/documentos.js';
+import { generarArchivo, archivoPieza, extensiones, kitZip, TIPOS_MIME } from './lib/documentos.js';
+import { FORMATOS, formatoDeSkill, esSkillDePieza } from './lib/formatos.js';
 import { paqueteNotebookLM } from './lib/notebooklm.js';
 import { listarSkills, leerSkill } from './lib/skills.js';
 import { exportar, importar, estadoFirestore, subirAFirestore, bajarDeFirestore, probarFirestore } from './lib/respaldo.js';
@@ -182,7 +183,11 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
   crud(api, db, { ruta: 'paises', tabla: 'paises', clave: 'codigo', orden: 'region, nombre',
     columnas: ['codigo', 'nombre', 'region', 'gl', 'activo', 'notas'] });
 
-  api.get('/skills', (req, res) => res.json(listarSkills(raizRepo)));
+  // Cada skill trae el formato en que entrega sus piezas (null = no produce piezas, como SKL-GEN-001).
+  api.get('/skills', (req, res) => res.json(listarSkills(raizRepo).map((s) => ({
+    ...s, formato: s.codigo && esSkillDePieza(s.codigo) ? formatoDeSkill(s.codigo) : null,
+  }))));
+  api.get('/formatos', (req, res) => res.json(FORMATOS));
   api.get('/skills/:archivo', (req, res) => {
     const t = leerSkill(raizRepo, req.params.archivo);
     exigir(t !== null, 'Skill no encontrada');
@@ -252,15 +257,22 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
   });
   api.post('/fichas/:id/piezas', (req, res) => {
     exigir(req.body.titulo?.trim(), 'La pieza necesita un nombre');
-    res.status(201).json(crearPieza(db, entero(req.params.id), { ...req.body, titulo: req.body.titulo.trim() }));
+    try {
+      res.status(201).json(crearPieza(db, entero(req.params.id), { ...req.body, titulo: req.body.titulo.trim() }));
+    } catch (e) {
+      throw new ErrorCliente(e.message);
+    }
   });
   api.patch('/piezas/:id', (req, res) => {
     const permitidos = ['titulo', 'tipo', 'skill_codigo', 'instrucciones', 'estado', 'contenido', 'orden'];
     const cambios = Object.fromEntries(Object.entries(req.body).filter(([k]) => permitidos.includes(k)));
     exigir(!cambios.estado || ['pendiente', 'borrador', 'aprobada'].includes(cambios.estado), 'Estado inválido');
-    exigir(!cambios.tipo || ['documento', 'presentacion'].includes(cambios.tipo), 'Tipo inválido');
     pieza(req.params.id);
-    res.json(actualizarPieza(db, entero(req.params.id), cambios));
+    try {
+      res.json(actualizarPieza(db, entero(req.params.id), cambios));
+    } catch (e) {
+      throw new ErrorCliente(e.message);
+    }
   });
   api.delete('/piezas/:id', (req, res) => {
     db.prepare('DELETE FROM piezas WHERE id = ?').run(entero(req.params.id));
@@ -286,12 +298,17 @@ export function crearApp(db, { raizRepo, dirWeb = null, recolectarFn = recolecta
   api.get('/piezas/:id/archivo', async (req, res) => {
     const p = pieza(req.params.id);
     exigir(p.contenido, 'La pieza todavía no tiene contenido');
-    const buf = await generarArchivo(p, fichaPlana(p.ficha_id));
-    const nombre = archivoPieza(p);
-    res.setHeader('Content-Type', p.tipo === 'presentacion'
-      ? 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
-      : 'application/vnd.openxmlformats-officedocument.wordprocessingml.document');
-    res.setHeader('Content-Disposition', `attachment; filename="${nombre}"; filename*=UTF-8''${encodeURIComponent(nombre)}`);
+    const ext = req.query.formato ?? extensiones(p)[0];
+    exigir(extensiones(p).includes(ext), `Esta pieza se entrega como ${FORMATOS[p.tipo].nombre}, no en .${ext}`);
+    const buf = await generarArchivo(p, fichaPlana(p.ficha_id), ext);
+    const nombre = archivoPieza(p, 0, ext);
+    res.setHeader('Content-Type', TIPOS_MIME[ext]);
+    if (ext === 'html') {
+      // El HTML lo escribió la IA: se abre aislado (sin acceso a la app ni a sus datos).
+      res.setHeader('Content-Security-Policy', 'sandbox allow-scripts allow-forms allow-modals allow-popups allow-downloads');
+    }
+    const modo = ext === 'html' && req.query.ver === '1' ? 'inline' : 'attachment';
+    res.setHeader('Content-Disposition', `${modo}; filename="${nombre}"; filename*=UTF-8''${encodeURIComponent(nombre)}`);
     res.send(buf);
   });
   api.get('/fichas/:id/kit', async (req, res) => {

@@ -22,6 +22,10 @@ function claude() {
   return clienteClaude;
 }
 
+// Con streaming: una pieza larga (una herramienta web completa) puede tardar varios minutos y
+// una llamada sin streaming se cortaría por tiempo. Se espera el mensaje completo al final.
+const pedir = (pedido) => claude().beta.messages.stream(pedido).finalMessage();
+
 async function llamarClaude({ modelo, sistema, usuario, esquema, maxTokens, esfuerzo }) {
   const pedido = {
     model: modelo,
@@ -36,7 +40,7 @@ async function llamarClaude({ modelo, sistema, usuario, esquema, maxTokens, esfu
   };
   let r;
   try {
-    r = await claude().beta.messages.create(pedido);
+    r = await pedir(pedido);
   } catch (e) {
     // Algunos modelos no aceptan fallbacks: se reintenta una vez sin ellos.
     if (e instanceof Anthropic.BadRequestError && /credit balance/i.test(e.message)) {
@@ -46,7 +50,7 @@ async function llamarClaude({ modelo, sistema, usuario, esquema, maxTokens, esfu
     } else if (e instanceof Anthropic.BadRequestError && /fallback/i.test(e.message)) {
       delete pedido.betas;
       delete pedido.fallbacks;
-      r = await claude().beta.messages.create(pedido);
+      r = await pedir(pedido);
     } else if (e instanceof Anthropic.AuthenticationError) {
       throw new ErrorIA('La clave de Claude (ANTHROPIC_API_KEY) no es válida.');
     } else if (e instanceof Anthropic.RateLimitError) {
